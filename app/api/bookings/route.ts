@@ -87,7 +87,7 @@ export async function GET(request: NextRequest) {
     
     const { db } = await import('@/lib/db');
     
-    let bookings;
+    let bookings: any[] = [];
     if (user.role === 'user') {
       bookings = db.getUserBookings(user.id);
     } else if (user.role === 'provider') {

@@ -1,4 +1,14 @@
-import { EnergyContract, ComparisonDeal, ComparisonResult } from './types';
+// EnergyContract, ComparisonDeal, ComparisonResult types are not part of the medical services app
+// This service is for contract comparison features
+interface EnergyContract {
+  [key: string]: any;
+}
+interface ComparisonDeal {
+  [key: string]: any;
+}
+interface ComparisonResult {
+  [key: string]: any;
+}
 import { Check24Client } from './check24Client';
 
 const check24Client = new Check24Client();

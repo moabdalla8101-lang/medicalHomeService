@@ -1,7 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { EnergyContract } from '@/lib/types';
+// EnergyContract type is not part of the medical services app
+// This component is for contract analysis features
+interface EnergyContract {
+  [key: string]: any;
+}
 
 interface ManualEntryFormProps {
   onSubmit: (contract: EnergyContract) => void;

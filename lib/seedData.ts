@@ -287,7 +287,7 @@ export function seedDummyProviders() {
     });
 
     // Update services with correct providerId
-    const updatedServices = profile.services.map(s => ({
+    const updatedServices = profile.services.map((s: any) => ({
       ...s,
       providerId: profile.id,
     }));

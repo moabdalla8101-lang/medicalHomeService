@@ -17,16 +17,6 @@ export async function POST(
       );
     }
     
-    const allReviews = Array.from((db as any).reviews.values());
-    const review = allReviews.find((r: any) => r.id === params.id);
-    
-    if (!review) {
-      return NextResponse.json(
-        { error: 'Review not found' },
-        { status: 404 }
-      );
-    }
-    
     // Update review status using db method
     const updated = db.updateReview(params.id, {
       status: 'rejected',
@@ -34,16 +24,16 @@ export async function POST(
     
     if (!updated) {
       return NextResponse.json(
-        { error: 'Failed to update review' },
-        { status: 500 }
+        { error: 'Review not found or failed to update' },
+        { status: 404 }
       );
     }
     
     return NextResponse.json({
       success: true,
       review: {
-        id: review.id,
-        status: 'rejected',
+        id: updated.id,
+        status: updated.status,
       },
     });
   } catch (error) {

@@ -136,8 +136,8 @@ export async function refundPayment(paymentId: string, reason?: string): Promise
   // In production, call KNET refund API
   // For now, just update status
   
-  const { db } = await import('./db');
-  const paymentsMap = (db as any).payments;
+  const { db: dbInstance } = await import('./db');
+  const paymentsMap = (dbInstance as any).payments;
   const updatedPayment = {
     ...payment,
     status: 'refunded' as const,

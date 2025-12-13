@@ -1,4 +1,12 @@
-import { ComparisonResult } from '@/lib/types';
+// ComparisonResult type is not part of the medical services app
+// This component is for contract comparison features
+interface ComparisonResult {
+  recommendedDeal?: any;
+  savings?: any;
+  deals?: any[];
+  totalSavings?: number;
+  [key: string]: any; // Allow any additional properties
+}
 
 interface ComparisonResultsProps {
   results: ComparisonResult;
@@ -90,11 +98,11 @@ export default function ComparisonResults({ results }: ComparisonResultsProps) {
           </div>
           <h3 className="text-2xl font-bold text-gray-800">All Available Deals</h3>
           <span className="ml-auto px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-sm font-medium">
-            {results.deals.length} deals found
+            {results.deals?.length || 0} deals found
           </span>
         </div>
         <div className="space-y-4">
-          {results.deals.map((deal, index) => (
+          {results.deals?.map((deal, index) => (
             <div
               key={deal.id}
               className={`bg-white border-2 rounded-xl p-6 hover:shadow-lg transition-all duration-200 animate-fadeIn ${
