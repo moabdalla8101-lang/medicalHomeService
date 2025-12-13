@@ -3,13 +3,16 @@ import { db } from '@/lib/db';
 import { ProviderFilters } from '@/lib/types';
 
 // Force dynamic rendering since we use searchParams
+// These configs prevent Next.js from trying to statically generate this route
 export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs';
+export const dynamicParams = true;
+export const revalidate = 0;
+export const fetchCache = 'force-no-store';
 
 export async function GET(request: NextRequest) {
   try {
-    // Access searchParams safely - delay access until runtime
-    const { searchParams } = request.nextUrl;
+    // Access searchParams - route is marked as dynamic so this only runs at request time
+    const searchParams = request.nextUrl.searchParams;
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '20');
     const serviceType = searchParams.get('serviceType') as any;
