@@ -11,13 +11,13 @@ interface ProviderProfileEditProps {
 
 export default function ProviderProfileEdit({ profile, onUpdate }: ProviderProfileEditProps) {
   const [formData, setFormData] = useState({
-    name: profile.name || '',
-    bio: profile.bio || '',
-    experience: profile.experience || 0,
-    specialty: profile.specialty || '',
-    emergencyAvailable: profile.emergencyAvailable || false,
+    name: profile?.name || '',
+    bio: profile?.bio || '',
+    experience: profile?.experience || 0,
+    specialty: profile?.specialty || '',
+    emergencyAvailable: profile?.emergencyAvailable || false,
   });
-  const [profilePhoto, setProfilePhoto] = useState(profile.profilePhoto || '');
+  const [profilePhoto, setProfilePhoto] = useState(profile?.profilePhoto || '');
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);

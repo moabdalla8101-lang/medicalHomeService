@@ -69,8 +69,8 @@ export default function ProviderDashboard({ user }: ProviderDashboardProps) {
     router.push('/');
   };
 
-  if (!profile) {
-    // Show onboarding if no profile
+  // Show onboarding if no profile, but allow editing if user clicked Complete Profile
+  if (!profile && activeTab !== 'profile') {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full">
@@ -84,6 +84,46 @@ export default function ProviderDashboard({ user }: ProviderDashboardProps) {
           >
             Complete Profile
           </button>
+        </div>
+      </div>
+    );
+  }
+
+  // If no profile but user wants to edit, show the profile edit form
+  if (!profile && activeTab === 'profile') {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <div className="bg-white shadow-sm">
+          <div className="max-w-7xl mx-auto px-4 py-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-2xl font-bold">Complete Your Profile</h1>
+                <p className="text-gray-600">Fill in your information to start accepting bookings</p>
+              </div>
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
+              >
+                <LogOut className="w-5 h-5" />
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+        <div className="max-w-3xl mx-auto px-4 py-6">
+          <div className="bg-white rounded-lg shadow p-6">
+            <ProviderProfileEdit 
+              profile={{ 
+                name: '', 
+                bio: '', 
+                experience: 0, 
+                specialty: '', 
+                emergencyAvailable: false,
+                profilePhoto: '',
+              }} 
+              onUpdate={fetchProfile} 
+            />
+          </div>
         </div>
       </div>
     );

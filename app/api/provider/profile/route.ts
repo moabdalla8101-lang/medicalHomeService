@@ -85,32 +85,56 @@ export async function PATCH(request: NextRequest) {
     const body = await request.json();
     const updates = updateProfileSchema.parse(body);
     
-    const profile = db.getProviderProfileByUserId(user.id);
+    let profile = db.getProviderProfileByUserId(user.id);
+    
+    // If profile doesn't exist, create it
     if (!profile) {
-      return NextResponse.json(
-        { error: 'Profile not found' },
-        { status: 404 }
-      );
-    }
-    
-    const updated = db.updateProviderProfile(profile.id, updates);
-    
-    if (!updated) {
-      return NextResponse.json(
-        { error: 'Failed to update profile' },
-        { status: 500 }
-      );
+      // Require at least name and specialty for new profiles
+      if (!updates.name || !updates.specialty) {
+        return NextResponse.json(
+          { error: 'Name and specialty are required to create a profile' },
+          { status: 400 }
+        );
+      }
+      
+      profile = db.createProviderProfile({
+        userId: user.id,
+        name: updates.name,
+        bio: updates.bio || '',
+        experience: updates.experience || 0,
+        specialty: updates.specialty,
+        profilePhoto: updates.profilePhoto,
+        gallery: [],
+        emergencyAvailable: updates.emergencyAvailable || false,
+        status: 'pending', // New profiles need admin approval
+        services: [],
+        availability: updates.availability || [],
+      });
+    } else {
+      // Update existing profile
+      const updated = db.updateProviderProfile(profile.id, updates);
+      
+      if (!updated) {
+        return NextResponse.json(
+          { error: 'Failed to update profile' },
+          { status: 500 }
+        );
+      }
+      
+      profile = updated;
     }
     
     return NextResponse.json({
       success: true,
       profile: {
-        id: updated.id,
-        name: updated.name,
-        bio: updated.bio,
-        experience: updated.experience,
-        specialty: updated.specialty,
-        emergencyAvailable: updated.emergencyAvailable,
+        id: profile.id,
+        name: profile.name,
+        bio: profile.bio,
+        experience: profile.experience,
+        specialty: profile.specialty,
+        emergencyAvailable: profile.emergencyAvailable,
+        profilePhoto: profile.profilePhoto,
+        status: profile.status,
       },
     });
   } catch (error) {
