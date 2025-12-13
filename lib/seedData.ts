@@ -38,7 +38,7 @@ export function seedDummyProviders() {
   const existingProviders = db.getAllProviders();
   if (existingProviders.length > 0) {
     console.log('[SEED] Providers already exist, skipping seed');
-    return;
+    return existingProviders.length;
   }
 
   console.log('[SEED] Creating dummy providers...');
@@ -305,5 +305,6 @@ export function seedDummyProviders() {
   });
 
   console.log(`[SEED] Created ${providers.length} dummy providers`);
+  return providers.length;
 }
 

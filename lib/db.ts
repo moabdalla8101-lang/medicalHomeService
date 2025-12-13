@@ -71,6 +71,7 @@ if (!systemConfig) {
 }
 
 // Seed dummy data in development - defer to avoid circular dependency
+// In production, use /api/admin/seed endpoint to populate data
 if (process.env.NODE_ENV === 'development') {
   // Only seed once per server instance
   if (!global.__db_seeded) {
