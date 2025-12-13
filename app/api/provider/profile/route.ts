@@ -109,6 +109,7 @@ export async function PATCH(request: NextRequest) {
         status: 'pending', // New profiles need admin approval
         services: [],
         availability: updates.availability || [],
+        maxBookingsPerDay: 10, // Default value for new profiles
       });
     } else {
       // Update existing profile
