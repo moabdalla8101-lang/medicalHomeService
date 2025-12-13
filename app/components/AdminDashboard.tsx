@@ -51,17 +51,30 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('/api/admin/seed', {
+      // Try the seed endpoint first, fallback to stats endpoint
+      let response = await fetch('/api/admin/seed', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
         },
       });
 
+      // If seed endpoint doesn't work, try stats endpoint with seed action
+      if (!response.ok) {
+        response = await fetch('/api/admin/stats', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ action: 'seed' }),
+        });
+      }
+
       const data = await response.json();
       
       if (response.ok) {
-        alert(`Success! ${data.message}\nProviders created: ${data.providersCount}`);
+        alert(`Success! ${data.message}\nProviders created: ${data.providersCount || 0}`);
         fetchStats(); // Refresh stats
       } else {
         alert(`Error: ${data.error || 'Failed to seed data'}`);
