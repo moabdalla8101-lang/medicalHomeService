@@ -18,13 +18,9 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { role } = updateRoleSchema.parse(body);
     
-    // In development, allow role updates for testing
-    if (process.env.NODE_ENV !== 'development') {
-      return NextResponse.json(
-        { error: 'Role updates only allowed in development' },
-        { status: 403 }
-      );
-    }
+    // Allow role updates for demo/testing purposes
+    // In production, you may want to restrict this to specific admin users only
+    // For now, we allow it for easier testing and demo purposes
     
     // Update user role
     const updated = db.updateUser(user.id, { role });

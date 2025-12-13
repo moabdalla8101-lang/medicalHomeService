@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 
 interface PhoneAuthProps {
   onSuccess: (token: string, user: any) => void;
-  role?: 'user' | 'provider';
+  role?: 'user' | 'provider' | 'admin';
 }
 
 export default function PhoneAuth({ onSuccess, role = 'user' }: PhoneAuthProps) {

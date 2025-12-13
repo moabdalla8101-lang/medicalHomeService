@@ -109,7 +109,7 @@ export default function AdminPage() {
             <p className="text-gray-600 text-center mb-6">
               Enter your phone number to access the admin dashboard
             </p>
-            <PhoneAuth onSuccess={handleAuthSuccess} role="user" />
+            <PhoneAuth onSuccess={handleAuthSuccess} role="admin" />
           </div>
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800">
             <p className="font-semibold mb-1">Development Note:</p>
