@@ -44,6 +44,34 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
     }
   };
 
+  const handleSeedData = async () => {
+    if (!confirm('This will populate the database with dummy providers. Continue?')) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('/api/admin/seed', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+      
+      if (response.ok) {
+        alert(`Success! ${data.message}\nProviders created: ${data.providersCount}`);
+        fetchStats(); // Refresh stats
+      } else {
+        alert(`Error: ${data.error || 'Failed to seed data'}`);
+      }
+    } catch (error) {
+      console.error('Error seeding data:', error);
+      alert('Failed to seed data. Please try again.');
+    }
+  };
+
   const handleLogout = () => {
     localStorage.removeItem('token');
     router.push('/');
@@ -59,13 +87,23 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
               <h1 className="text-2xl font-bold">Admin Dashboard</h1>
               <p className="text-gray-600">Welcome, {user.name || user.phone}</p>
             </div>
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
-            >
-              <LogOut className="w-5 h-5" />
-              Logout
-            </button>
+            <div className="flex items-center gap-3">
+              {stats.totalProviders === 0 && (
+                <button
+                  onClick={handleSeedData}
+                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium"
+                >
+                  Seed Dummy Data
+                </button>
+              )}
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
+              >
+                <LogOut className="w-5 h-5" />
+                Logout
+              </button>
+            </div>
           </div>
         </div>
       </div>
