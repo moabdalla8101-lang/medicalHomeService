@@ -38,9 +38,12 @@ export async function POST(request: NextRequest) {
     
     const normalizedPhone = normalizePhone(phone);
     
-    if (process.env.NODE_ENV === 'development') {
-      console.log('[VERIFY-OTP] After normalization:', { originalPhone: phone, normalizedPhone, otp, role });
-    }
+    // Always log role info for debugging (even in production for this demo)
+    console.log('[VERIFY-OTP] Authenticating:', { 
+      normalizedPhone, 
+      role: role || 'not provided',
+      willSetRole: role || 'default (user)'
+    });
     
     const result = await verifyOTPAndAuthenticate(normalizedPhone, otp, role);
     
