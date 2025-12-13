@@ -41,11 +41,11 @@ export default function PhoneAuth({ onSuccess, role = 'user' }: PhoneAuthProps) 
       // Store normalized phone for verification (always available from API)
       setNormalizedPhone(data.normalizedPhone || phone);
       
-      // In development, show OTP in console
+      // Show OTP in toast (mock SMS system - for testing)
       if (data.otp) {
-        console.log('OTP (dev only):', data.otp);
+        console.log('OTP:', data.otp);
         console.log('Normalized phone:', data.normalizedPhone || phone);
-        toast.success(`OTP: ${data.otp} (dev only)`, { duration: 10000 });
+        toast.success(`Your OTP: ${data.otp}`, { duration: 15000 });
       }
     } catch (error: any) {
       toast.error(error.message || 'Failed to send OTP');

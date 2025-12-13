@@ -37,13 +37,13 @@ export async function POST(request: NextRequest) {
       });
     }
     
-    // In development, return OTP for testing (remove in production)
+    // Return OTP for testing (since this is a mock SMS system)
+    // In production with real SMS, remove this
     return NextResponse.json({
       success: true,
       message: 'OTP sent successfully',
       normalizedPhone, // Always return normalized phone so client can use it
-      // Remove this in production:
-      ...(process.env.NODE_ENV === 'development' && { otp }),
+      otp, // Always return OTP for testing (mock SMS system)
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
