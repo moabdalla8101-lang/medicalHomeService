@@ -4,9 +4,11 @@ import { ProviderFilters } from '@/lib/types';
 
 // Force dynamic rendering since we use searchParams
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 export async function GET(request: NextRequest) {
   try {
+    // Access searchParams - this route is forced dynamic so it won't be statically generated
     const searchParams = request.nextUrl.searchParams;
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '20');

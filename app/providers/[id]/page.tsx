@@ -5,6 +5,9 @@ import { useParams } from 'next/navigation';
 import ProviderProfile from '@/app/components/ProviderProfile';
 import LoadingSpinner from '@/app/components/LoadingSpinner';
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 export default function ProviderPage() {
   const params = useParams();
   const [provider, setProvider] = useState<any>(null);

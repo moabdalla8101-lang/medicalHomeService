@@ -4,6 +4,9 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import ProviderFeed from './components/ProviderFeed';
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 export default function Home() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
