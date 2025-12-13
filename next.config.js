@@ -5,6 +5,8 @@ const nextConfig = {
       bodySizeLimit: '10mb',
     },
   },
+  // Ensure API routes are not statically generated
+  output: 'standalone',
 }
 
 module.exports = nextConfig

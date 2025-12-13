@@ -3,6 +3,9 @@ import { requireAuth } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { z } from 'zod';
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 const rejectSchema = z.object({
   reason: z.string().min(1, 'Reason is required'),
 });

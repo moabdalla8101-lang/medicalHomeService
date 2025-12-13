@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifyOTPAndAuthenticate, normalizePhone } from '@/lib/auth';
 import { z } from 'zod';
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 const verifyOTPSchema = z.object({
   phone: z.string().min(1, 'Phone number is required'),
   otp: z.string().length(6, 'OTP must be 6 digits'),

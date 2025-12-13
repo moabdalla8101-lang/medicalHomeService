@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { sendOTP, isValidKuwaitPhone, normalizePhone } from '@/lib/auth';
 import { z } from 'zod';
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 const sendOTPSchema = z.object({
   phone: z.string().min(1, 'Phone number is required'),
   role: z.enum(['user', 'provider']).optional(),

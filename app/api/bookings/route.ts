@@ -3,6 +3,9 @@ import { requireAuth } from '@/lib/auth';
 import { createBooking } from '@/lib/bookingService';
 import { z } from 'zod';
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 const createBookingSchema = z.object({
   providerId: z.string(),
   serviceId: z.string(),

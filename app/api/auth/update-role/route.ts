@@ -3,6 +3,9 @@ import { requireAuth } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { z } from 'zod';
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 const updateRoleSchema = z.object({
   role: z.enum(['user', 'provider', 'admin']),
 });

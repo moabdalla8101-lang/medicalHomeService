@@ -3,6 +3,9 @@ import { requireAuth } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { z } from 'zod';
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 const updateSettingsSchema = z.object({
   platformCommissionPercent: z.number().min(0).max(100).optional(),
   emergencySurchargePercent: z.number().min(0).max(100).optional(),

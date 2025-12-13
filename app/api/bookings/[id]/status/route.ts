@@ -3,6 +3,9 @@ import { requireAuth } from '@/lib/auth';
 import { updateBookingStatus } from '@/lib/bookingService';
 import { z } from 'zod';
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 const updateStatusSchema = z.object({
   status: z.enum(['confirmed', 'on_the_way', 'in_progress', 'completed', 'cancelled']),
   cancellationReason: z.string().optional(),

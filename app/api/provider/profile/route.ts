@@ -3,6 +3,9 @@ import { requireAuth } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { z } from 'zod';
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 const updateProfileSchema = z.object({
   name: z.string().min(1).optional(),
   bio: z.string().optional(),

@@ -1,4 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
 // Comparison features are not part of the medical services app
 // Uncomment and install dependencies if needed: npm install cheerio
 

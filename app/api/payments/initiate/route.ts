@@ -3,6 +3,9 @@ import { requireAuth } from '@/lib/auth';
 import { initiateKNETPayment } from '@/lib/paymentService';
 import { z } from 'zod';
 
+// Force dynamic rendering since we use nextUrl
+export const dynamic = 'force-dynamic';
+
 const initiatePaymentSchema = z.object({
   bookingId: z.string(),
   returnUrl: z.string().url().optional(),
