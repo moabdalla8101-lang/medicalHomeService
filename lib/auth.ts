@@ -116,14 +116,17 @@ export async function verifyOTPAndAuthenticate(
   let user = db.getUserByPhone(normalizedPhone);
   
   if (!user) {
-    // Create new user
+    // Create new user with the specified role (or default to 'user')
     user = db.createUser({
       phone: normalizedPhone,
       role: role || 'user',
     });
-  } else if (role && user.role !== role) {
-    // Update role if provided and different
-    user = db.updateUser(user.id, { role })!;
+  } else if (role) {
+    // If role is provided (e.g., 'admin' when logging in via /admin), always update it
+    // This ensures users logging in via /admin get admin role regardless of previous role
+    if (user.role !== role) {
+      user = db.updateUser(user.id, { role })!;
+    }
   }
   
   // Generate JWT token

@@ -52,11 +52,11 @@ export default function AdminPage() {
   };
 
   const handleAuthSuccess = async (token: string, userData: any) => {
-    // After login, check if user needs admin role assigned
-    // In development, we can auto-assign admin role
+    // When logging in via /admin, the role should already be 'admin' from the auth flow
+    // But if for some reason it's not, try to update it
     if (userData.role !== 'admin') {
       try {
-        // Try to update role to admin (for development/testing)
+        // Try to update role to admin
         const response = await fetch('/api/auth/update-role', {
           method: 'POST',
           headers: {
@@ -66,27 +66,42 @@ export default function AdminPage() {
           body: JSON.stringify({ role: 'admin' }),
         });
         
+        const data = await response.json();
+        
         if (response.ok) {
-          const data = await response.json();
           // Update token with new role
           localStorage.setItem('token', data.token);
           setUser(data.user);
           setIsAuthenticated(true);
         } else {
-          // Can't update role, show error
-          const errorData = await response.json();
-          alert(errorData.error || 'This account does not have admin access. Please use an admin account.');
-          localStorage.removeItem('token');
-          return;
+          // If update fails, still try to proceed - the role might have been set during auth
+          console.warn('Role update failed, but proceeding:', data.error);
+          // Check if role was actually set during authentication
+          if (userData.role === 'admin') {
+            localStorage.setItem('token', token);
+            setUser(userData);
+            setIsAuthenticated(true);
+          } else {
+            alert('Failed to grant admin access. Please try logging in again.');
+            localStorage.removeItem('token');
+          }
         }
       } catch (error) {
-        alert('Failed to grant admin access. Please try again.');
-        localStorage.removeItem('token');
-        return;
+        console.error('Error updating role:', error);
+        // If there's an error, still try to proceed if role is already admin
+        if (userData.role === 'admin') {
+          localStorage.setItem('token', token);
+          setUser(userData);
+          setIsAuthenticated(true);
+        } else {
+          alert('Failed to grant admin access. Please try again.');
+          localStorage.removeItem('token');
+        }
       }
       return;
     }
     
+    // Role is already admin, proceed normally
     localStorage.setItem('token', token);
     setUser(userData);
     setIsAuthenticated(true);
