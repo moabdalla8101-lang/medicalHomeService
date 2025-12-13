@@ -8,8 +8,8 @@ export const runtime = 'nodejs';
 
 export async function GET(request: NextRequest) {
   try {
-    // Access searchParams - this route is forced dynamic so it won't be statically generated
-    const searchParams = request.nextUrl.searchParams;
+    // Access searchParams safely - delay access until runtime
+    const { searchParams } = request.nextUrl;
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '20');
     const serviceType = searchParams.get('serviceType') as any;
