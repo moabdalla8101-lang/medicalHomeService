@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Star, MapPin, Clock, AlertCircle, Calendar, DollarSign, MessageSquare } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Star, MapPin, Clock, AlertCircle, Calendar, DollarSign, MessageSquare, ArrowLeft } from 'lucide-react';
 import BookingModal from './BookingModal';
 import PhoneAuth from './PhoneAuth';
 
@@ -43,6 +44,7 @@ interface ProviderProfileProps {
 }
 
 export default function ProviderProfile({ provider }: ProviderProfileProps) {
+  const router = useRouter();
   const [selectedService, setSelectedService] = useState<string | null>(null);
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -125,6 +127,15 @@ export default function ProviderProfile({ provider }: ProviderProfileProps) {
       {/* Header */}
       <div className="bg-white shadow-sm">
         <div className="max-w-4xl mx-auto px-4 py-6">
+          {/* Back Button */}
+          <button
+            onClick={() => router.push('/')}
+            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4 transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            <span className="font-medium">Back to Home</span>
+          </button>
+          
           <div className="flex items-start gap-6">
             {/* Profile Photo */}
             <div className="relative w-32 h-32 rounded-full overflow-hidden bg-gradient-to-br from-blue-100 to-indigo-100 flex-shrink-0">
