@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { seedDummyProviders } from '@/lib/seedData';
 import { db } from '@/lib/db';
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   try {
     // Check if providers already exist

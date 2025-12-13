@@ -3,6 +3,9 @@ import { requireAuth } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { z } from 'zod';
 
+// Force dynamic rendering since we use searchParams
+export const dynamic = 'force-dynamic';
+
 const createReviewSchema = z.object({
   bookingId: z.string(),
   rating: z.number().min(1).max(5),

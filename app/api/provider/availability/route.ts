@@ -4,6 +4,9 @@ import { db } from '@/lib/db';
 import { AvailabilitySlot } from '@/lib/types';
 import { z } from 'zod';
 
+// Force dynamic rendering since we use searchParams
+export const dynamic = 'force-dynamic';
+
 const createSlotSchema = z.object({
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   startTime: z.string().regex(/^\d{2}:\d{2}$/),
