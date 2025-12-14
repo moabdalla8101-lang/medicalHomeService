@@ -169,20 +169,20 @@ export default function ProviderProfile({ provider }: ProviderProfileProps) {
             </div>
 
             {/* Info */}
-            <div className="flex-1">
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">{provider.name}</h1>
-              <p className="text-base sm:text-lg text-gray-600 mb-2">{provider.specialty}</p>
+            <div className={`flex-1 ${isRTL ? 'text-right' : 'text-left'}`}>
+              <h1 className={`text-2xl sm:text-3xl font-bold text-gray-900 mb-2 ${isRTL ? 'text-right' : 'text-left'}`}>{provider.name}</h1>
+              <p className={`text-base sm:text-lg text-gray-600 mb-2 ${isRTL ? 'text-right' : 'text-left'}`}>{provider.specialty}</p>
               
               {/* Medical Centre */}
               {provider.medicalCentre && (
-                <div className={`flex items-center gap-2 text-gray-600 mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
-                  <MapPin className="w-5 h-5" />
+                <div className={`flex items-start gap-2 text-gray-600 mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                  <MapPin className={`w-5 h-5 flex-shrink-0 ${isRTL ? 'mt-0.5' : ''}`} />
                   <div className={isRTL ? 'text-right' : 'text-left'}>
-                    <span className="font-medium">{provider.medicalCentre.name}</span>
+                    <div className="font-medium">{provider.medicalCentre.name}</div>
                     {provider.medicalCentre.address && (
-                      <span className={`text-sm text-gray-500 ${isRTL ? 'mr-2' : 'ml-2'}`}>
-                        - {provider.medicalCentre.address}
-                      </span>
+                      <div className="text-sm text-gray-500 mt-1">
+                        {provider.medicalCentre.address}
+                      </div>
                     )}
                   </div>
                 </div>
@@ -190,7 +190,7 @@ export default function ProviderProfile({ provider }: ProviderProfileProps) {
               
               {/* Rating */}
               <div className={`flex items-center gap-2 mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
-                <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                <Star className="w-5 h-5 fill-yellow-400 text-yellow-400 flex-shrink-0" />
                 <span className="text-lg font-semibold">{provider.rating.toFixed(1)}</span>
                 <span className="text-gray-500">({provider.totalReviews} {t('provider.reviews')})</span>
               </div>
@@ -198,7 +198,7 @@ export default function ProviderProfile({ provider }: ProviderProfileProps) {
               {/* Experience */}
               {provider.experience && (
                 <div className={`flex items-center gap-2 text-gray-600 mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
-                  <Clock className="w-5 h-5" />
+                  <Clock className="w-5 h-5 flex-shrink-0" />
                   <span>{provider.experience} {t('provider.experience')}</span>
                 </div>
               )}
