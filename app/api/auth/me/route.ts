@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     // Get provider profile if user is a provider
     let providerProfile = null;
     if (user.role === 'provider') {
-      providerProfile = db.getProviderProfileByUserId(user.id);
+      providerProfile = await db.getProviderProfileByUserId(user.id);
     }
     
     return NextResponse.json({

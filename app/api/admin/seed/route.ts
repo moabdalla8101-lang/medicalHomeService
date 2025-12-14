@@ -7,26 +7,31 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
   try {
+    const body = await request.json().catch(() => ({}));
+    const forceUpdate = body.forceUpdate === true || body.action === 'update-slots';
+    
     // Check if providers already exist
     const existingProviders = await db.getAllProviders();
     
-    if (existingProviders.length > 0) {
+    if (existingProviders.length > 0 && !forceUpdate) {
       return NextResponse.json({
         success: true,
-        message: 'Dummy data already exists',
+        message: 'Dummy data already exists. Send {"forceUpdate": true} to update availability slots.',
         providersCount: existingProviders.length,
       });
     }
 
-    // Seed dummy providers
-    await seedDummyProviders();
+    // Seed dummy providers (or update if forceUpdate is true)
+    const count = await seedDummyProviders(forceUpdate);
 
     // Verify seeding
     const providers = await db.getAllProviders();
     
     return NextResponse.json({
       success: true,
-      message: 'Dummy data seeded successfully',
+      message: forceUpdate 
+        ? `Updated ${count} providers with availability slots` 
+        : 'Dummy data seeded successfully',
       providersCount: providers.length,
     });
   } catch (error) {
