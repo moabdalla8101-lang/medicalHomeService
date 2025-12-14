@@ -1,0 +1,28 @@
+
+# ============================================
+# Supabase Database Configuration
+# ============================================
+# 
+# Your Supabase Project:
+#   URL: https://izvmzpbtfmvnazyejatv.supabase.co
+#   Ref: izvmzpbtfmvnazyejatv
+#
+# To get your database password:
+#   1. Visit: https://supabase.com/dashboard/project/izvmzpbtfmvnazyejatv/settings/database
+#   2. Scroll to 'Connection string' section
+#   3. Copy the password from the connection string
+#   4. Replace [YOUR-PASSWORD] below
+#
+# Then run: ./setup-supabase.sh
+#
+# ============================================
+
+# Database Connection (add your password)
+# DATABASE_URL="postgresql://postgres:[YOUR-PASSWORD]@izvmzpbtfmvnazyejatv.supabase.co:5432/postgres"
+
+# JWT Secret (already set)
+# JWT_SECRET=your-secret-key-change-in-production-please-use-a-strong-random-string
+
+# Environment
+# NODE_ENV=development
+
