@@ -46,9 +46,10 @@
     "bookAppointment": "Book Appointment",
     "emergencyBooking": "Emergency Booking",
     "backToHome": "Back to Home",
-    "bio": "Bio",
+    "bio": "About",
     "gallery": "Gallery",
-    "reviews": "Reviews"
+    "noAvailableSlots": "No available slots",
+    "noReviews": "No reviews yet"
   },
   "booking": {
     "title": "Book Appointment",
@@ -86,15 +87,22 @@
     "login": "Login",
     "logout": "Logout",
     "phoneNumber": "Phone Number",
-    "enterPhone": "Enter your phone number",
-    "otp": "OTP",
-    "enterOTP": "Enter OTP",
+    "enterPhone": "Enter Your Phone",
+    "enterOTP": "Verify OTP",
+    "otp": "Verification Code",
     "sendOTP": "Send OTP",
     "verify": "Verify",
     "resendOTP": "Resend OTP",
     "invalidOTP": "Invalid OTP",
     "otpSent": "OTP sent successfully",
-    "loginSuccess": "Login successful"
+    "loginSuccess": "Login successful",
+    "kuwait": "Kuwait",
+    "phoneNumberHint": "Enter your 8-digit Kuwait phone number",
+    "sending": "Sending...",
+    "verifying": "Verifying...",
+    "otpSentMessage": "We'll send you a verification code",
+    "enterOTPMessage": "Enter the 6-digit code sent to your phone",
+    "changePhoneNumber": "Change phone number"
   },
   "language": {
     "switch": "Switch Language",

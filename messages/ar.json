@@ -48,7 +48,8 @@
     "backToHome": "العودة للصفحة الرئيسية",
     "bio": "نبذة",
     "gallery": "معرض الصور",
-    "reviews": "التقييمات"
+    "noAvailableSlots": "لا توجد مواعيد متاحة",
+    "noReviews": "لا توجد تقييمات بعد"
   },
   "booking": {
     "title": "حجز موعد",
@@ -84,14 +85,21 @@
     "logout": "تسجيل الخروج",
     "phoneNumber": "رقم الهاتف",
     "enterPhone": "أدخل رقم هاتفك",
-    "otp": "رمز التحقق",
     "enterOTP": "أدخل رمز التحقق",
+    "otp": "رمز التحقق",
     "sendOTP": "إرسال رمز التحقق",
     "verify": "تحقق",
     "resendOTP": "إعادة إرسال الرمز",
     "invalidOTP": "رمز التحقق غير صحيح",
     "otpSent": "تم إرسال رمز التحقق",
-    "loginSuccess": "تم تسجيل الدخول بنجاح"
+    "loginSuccess": "تم تسجيل الدخول بنجاح",
+    "kuwait": "الكويت",
+    "phoneNumberHint": "أدخل رقم هاتفك الكويتي المكون من 8 أرقام",
+    "sending": "جاري الإرسال...",
+    "verifying": "جاري التحقق...",
+    "otpSentMessage": "سنرسل لك رمز التحقق",
+    "enterOTPMessage": "أدخل الرمز المكون من 6 أرقام المرسل إلى هاتفك",
+    "changePhoneNumber": "تغيير رقم الهاتف"
   },
   "language": {
     "switch": "تغيير اللغة",

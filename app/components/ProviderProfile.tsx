@@ -234,37 +234,37 @@ export default function ProviderProfile({ provider }: ProviderProfileProps) {
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
+      <div className="max-w-4xl mx-auto px-4 py-6 space-y-6" dir={isRTL ? 'rtl' : 'ltr'}>
         {/* Bio */}
         {provider.bio && (
           <div className="bg-white rounded-xl shadow-sm p-6">
-            <h2 className="text-xl font-bold mb-4">About</h2>
-            <p className="text-gray-700 leading-relaxed">{provider.bio}</p>
+            <h2 className={`text-xl font-bold mb-4 ${isRTL ? 'text-right' : 'text-left'}`}>{t('provider.bio')}</h2>
+            <p className={`text-gray-700 leading-relaxed ${isRTL ? 'text-right' : 'text-left'}`}>{provider.bio}</p>
           </div>
         )}
 
         {/* Services */}
         <div className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-xl font-bold mb-4">Services & Prices</h2>
+          <h2 className={`text-xl font-bold mb-4 ${isRTL ? 'text-right' : 'text-left'}`}>{t('provider.services')} & {t('home.price')}</h2>
           <div className="space-y-3">
             {provider.services.map((service) => (
               <div
                 key={service.id}
-                className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-blue-500 transition-colors"
+                className={`flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-blue-500 transition-colors ${isRTL ? 'flex-row-reverse' : ''}`}
               >
-                <div>
+                <div className={isRTL ? 'text-right' : 'text-left'}>
                   <h3 className="font-semibold text-gray-900">{service.name}</h3>
                   {service.description && (
                     <p className="text-sm text-gray-600 mt-1">{service.description}</p>
                   )}
-                  <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
-                    <span className="flex items-center gap-1">
+                  <div className={`flex items-center gap-4 mt-2 text-sm text-gray-500 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                    <span className={`flex items-center gap-1 ${isRTL ? 'flex-row-reverse' : ''}`}>
                       <Clock className="w-4 h-4" />
-                      {service.duration} min
+                      {service.duration} {t('common.minutes')}
                     </span>
                   </div>
                 </div>
-                <div className="text-right">
+                <div className={isRTL ? 'text-left' : 'text-right'}>
                   <p className="text-xl font-bold text-blue-600">{service.price} KWD</p>
                 </div>
               </div>
@@ -274,19 +274,19 @@ export default function ProviderProfile({ provider }: ProviderProfileProps) {
 
         {/* Availability Calendar */}
         <div className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-xl font-bold mb-4">Availability</h2>
+          <h2 className={`text-xl font-bold mb-4 ${isRTL ? 'text-right' : 'text-left'}`}>{t('provider.availability')}</h2>
           <div className="space-y-4">
             {provider.availability.map((day) => (
-              <div key={day.date} className="border-b border-gray-200 pb-4 last:border-0">
+              <div key={day.date} className={`border-b border-gray-200 pb-4 last:border-0 ${isRTL ? 'text-right' : 'text-left'}`}>
                 <h3 className="font-semibold mb-2">
-                  {new Date(day.date).toLocaleDateString('en-US', {
+                  {new Date(day.date).toLocaleDateString(locale === 'ar' ? 'ar-KW' : 'en-US', {
                     weekday: 'long',
                     month: 'short',
                     day: 'numeric',
                   })}
                 </h3>
                 {day.slots.length > 0 ? (
-                  <div className="flex flex-wrap gap-2">
+                  <div className={`flex flex-wrap gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
                     {day.slots.map((slot) => (
                       <span
                         key={slot.id}
@@ -297,7 +297,7 @@ export default function ProviderProfile({ provider }: ProviderProfileProps) {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-gray-500 text-sm">No available slots</p>
+                  <p className="text-gray-500 text-sm">{t('provider.noAvailableSlots') || 'No available slots'}</p>
                 )}
               </div>
             ))}
@@ -306,9 +306,9 @@ export default function ProviderProfile({ provider }: ProviderProfileProps) {
 
         {/* Reviews */}
         <div className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+          <h2 className={`text-xl font-bold mb-4 flex items-center gap-2 ${isRTL ? 'flex-row-reverse text-right' : 'text-left'}`}>
             <MessageSquare className="w-6 h-6" />
-            Reviews ({provider.totalReviews})
+            {t('provider.reviews')} ({provider.totalReviews})
           </h2>
           {provider.reviews.length > 0 ? (
             <div className="space-y-4">

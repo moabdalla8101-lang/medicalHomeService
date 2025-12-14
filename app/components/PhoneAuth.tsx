@@ -110,29 +110,29 @@ export default function PhoneAuth({ onSuccess, onAuthSuccess, role = 'user' }: P
   };
 
   return (
-    <div className="w-full max-w-md mx-auto bg-white rounded-2xl shadow-xl p-8">
+    <div className={`w-full max-w-md mx-auto bg-white rounded-2xl shadow-xl p-8 ${isRTL ? 'text-right' : 'text-left'}`} dir={isRTL ? 'rtl' : 'ltr'}>
       <div className="text-center mb-8">
         <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
           <Phone className="w-8 h-8 text-blue-600" />
         </div>
         <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          {step === 'phone' ? 'Enter Your Phone' : 'Verify OTP'}
+          {step === 'phone' ? t('auth.enterPhone') : t('auth.enterOTP')}
         </h2>
         <p className="text-gray-600">
           {step === 'phone'
-            ? "We'll send you a verification code"
-            : 'Enter the 6-digit code sent to your phone'}
+            ? t('auth.otpSentMessage') || "We'll send you a verification code"
+            : t('auth.enterOTPMessage') || 'Enter the 6-digit code sent to your phone'}
         </p>
       </div>
 
       {step === 'phone' ? (
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Phone Number (Kuwait)
+            <label className={`block text-sm font-medium text-gray-700 mb-2 ${isRTL ? 'text-right' : 'text-left'}`}>
+              {t('auth.phoneNumber')} ({t('auth.kuwait') || 'Kuwait'})
             </label>
-            <div className="flex">
-              <span className="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
+            <div className={`flex ${isRTL ? 'flex-row-reverse' : ''}`}>
+              <span className={`inline-flex items-center px-3 ${isRTL ? 'rounded-r-lg border-l-0 border-r' : 'rounded-l-lg border-r-0'} border border-gray-300 bg-gray-50 text-gray-500 text-sm`}>
                 +965
               </span>
               <input
@@ -140,35 +140,35 @@ export default function PhoneAuth({ onSuccess, onAuthSuccess, role = 'user' }: P
                 value={phone}
                 onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 8))}
                 placeholder="XXXXXXXX"
-                className="flex-1 px-4 py-3 border border-gray-300 rounded-r-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                className={`flex-1 px-4 py-3 border border-gray-300 ${isRTL ? 'rounded-l-lg' : 'rounded-r-lg'} focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none ${isRTL ? 'text-right' : 'text-left'}`}
                 maxLength={8}
               />
             </div>
-            <p className="mt-1 text-xs text-gray-500">
-              Enter your 8-digit Kuwait phone number
+            <p className={`mt-1 text-xs text-gray-500 ${isRTL ? 'text-right' : 'text-left'}`}>
+              {t('auth.phoneNumberHint') || 'Enter your 8-digit Kuwait phone number'}
             </p>
           </div>
 
           <button
             onClick={handleSendOTP}
             disabled={loading || phone.length !== 8}
-            className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+            className={`w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}
           >
             {loading ? (
               <>
                 <Loader2 className="w-5 h-5 animate-spin" />
-                Sending...
+                {t('auth.sending') || 'Sending...'}
               </>
             ) : (
-              'Send OTP'
+              t('auth.sendOTP')
             )}
           </button>
         </div>
       ) : (
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Verification Code
+            <label className={`block text-sm font-medium text-gray-700 mb-2 ${isRTL ? 'text-right' : 'text-left'}`}>
+              {t('auth.otp')}
             </label>
             <input
               type="text"
@@ -183,17 +183,17 @@ export default function PhoneAuth({ onSuccess, onAuthSuccess, role = 'user' }: P
           <button
             onClick={handleVerifyOTP}
             disabled={loading || otp.length !== 6}
-            className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+            className={`w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}
           >
             {loading ? (
               <>
                 <Loader2 className="w-5 h-5 animate-spin" />
-                Verifying...
+                {t('auth.verifying') || 'Verifying...'}
               </>
             ) : (
               <>
                 <CheckCircle2 className="w-5 h-5" />
-                Verify & Login
+                {t('auth.verify')} & {t('auth.login')}
               </>
             )}
           </button>
@@ -203,9 +203,9 @@ export default function PhoneAuth({ onSuccess, onAuthSuccess, role = 'user' }: P
               setStep('phone');
               setOtp('');
             }}
-            className="w-full text-gray-600 py-2 text-sm hover:text-gray-900"
+            className={`w-full text-gray-600 py-2 text-sm hover:text-gray-900 ${isRTL ? 'text-right' : 'text-left'}`}
           >
-            Change phone number
+            {t('auth.changePhoneNumber') || 'Change phone number'}
           </button>
         </div>
       )}
