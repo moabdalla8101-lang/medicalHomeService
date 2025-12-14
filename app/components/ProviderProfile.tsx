@@ -313,8 +313,8 @@ export default function ProviderProfile({ provider }: ProviderProfileProps) {
           {provider.reviews.length > 0 ? (
             <div className="space-y-4">
               {provider.reviews.map((review) => (
-                <div key={review.id} className="border-b border-gray-200 pb-4 last:border-0">
-                  <div className="flex items-center gap-2 mb-2">
+                <div key={review.id} className={`border-b border-gray-200 pb-4 last:border-0 ${isRTL ? 'text-right' : 'text-left'}`}>
+                  <div className={`flex items-center gap-2 mb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
                     {[...Array(5)].map((_, i) => (
                       <Star
                         key={i}
@@ -326,7 +326,7 @@ export default function ProviderProfile({ provider }: ProviderProfileProps) {
                       />
                     ))}
                     <span className="text-sm text-gray-500">
-                      {new Date(review.createdAt).toLocaleDateString()}
+                      {new Date(review.createdAt).toLocaleDateString(locale === 'ar' ? 'ar-KW' : 'en-US')}
                     </span>
                   </div>
                   {review.comment && (
@@ -336,7 +336,7 @@ export default function ProviderProfile({ provider }: ProviderProfileProps) {
               ))}
             </div>
           ) : (
-            <p className="text-gray-500">No reviews yet</p>
+            <p className={`text-gray-500 ${isRTL ? 'text-right' : 'text-left'}`}>{t('provider.noReviews') || 'No reviews yet'}</p>
           )}
         </div>
 
