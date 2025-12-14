@@ -8,12 +8,12 @@ export const dynamic = 'force-dynamic';
 export async function GET(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization');
-    const user = requireAuth(authHeader);
+    const user = await requireAuth(authHeader);
     
     const searchParams = request.nextUrl.searchParams;
     const unreadOnly = searchParams.get('unreadOnly') === 'true';
     
-    const notifications = db.getUserNotifications(user.id, unreadOnly);
+    const notifications = await db.getUserNotifications(user.id, unreadOnly);
     
     return NextResponse.json({
       success: true,
@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
 export async function PATCH(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization');
-    const user = requireAuth(authHeader);
+    const user = await requireAuth(authHeader);
     
     const body = await request.json();
     const { notificationId, read } = body;
@@ -57,7 +57,7 @@ export async function PATCH(request: NextRequest) {
       );
     }
     
-    const success = db.markNotificationRead(notificationId);
+    const success = await db.markNotificationRead(notificationId);
     
     if (!success) {
       return NextResponse.json(

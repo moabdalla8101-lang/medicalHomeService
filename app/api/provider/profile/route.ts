@@ -19,7 +19,7 @@ const updateProfileSchema = z.object({
 export async function GET(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization');
-    const user = requireAuth(authHeader);
+    const user = await requireAuth(authHeader);
     
     if (user.role !== 'provider') {
       return NextResponse.json(
@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
       );
     }
     
-    const profile = db.getProviderProfileByUserId(user.id);
+    const profile = await db.getProviderProfileByUserId(user.id);
     
     if (!profile) {
       return NextResponse.json(
@@ -73,7 +73,7 @@ export async function GET(request: NextRequest) {
 export async function PATCH(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization');
-    const user = requireAuth(authHeader);
+    const user = await requireAuth(authHeader);
     
     if (user.role !== 'provider') {
       return NextResponse.json(
@@ -85,7 +85,7 @@ export async function PATCH(request: NextRequest) {
     const body = await request.json();
     const updates = updateProfileSchema.parse(body);
     
-    let profile = db.getProviderProfileByUserId(user.id);
+    let profile = await db.getProviderProfileByUserId(user.id);
     
     // If profile doesn't exist, create it
     if (!profile) {
@@ -97,7 +97,7 @@ export async function PATCH(request: NextRequest) {
         );
       }
       
-      profile = db.createProviderProfile({
+      profile = await db.createProviderProfile({
         userId: user.id,
         name: updates.name,
         bio: updates.bio || '',
@@ -113,7 +113,7 @@ export async function PATCH(request: NextRequest) {
       });
     } else {
       // Update existing profile
-      const updated = db.updateProviderProfile(profile.id, updates);
+      const updated = await db.updateProviderProfile(profile.id, updates);
       
       if (!updated) {
         return NextResponse.json(

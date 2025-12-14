@@ -23,7 +23,7 @@ const updateSlotSchema = z.object({
 export async function GET(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization');
-    const user = requireAuth(authHeader);
+    const user = await requireAuth(authHeader);
     
     if (user.role !== 'provider') {
       return NextResponse.json(
@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
       );
     }
     
-    const profile = db.getProviderProfileByUserId(user.id);
+    const profile = await db.getProviderProfileByUserId(user.id);
     if (!profile) {
       return NextResponse.json(
         { error: 'Profile not found' },
@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const date = searchParams.get('date');
     
-    const slots = db.getProviderAvailability(profile.id, date || undefined);
+    const slots = await db.getProviderAvailability(profile.id, date || undefined);
     
     return NextResponse.json({
       success: true,
@@ -67,7 +67,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization');
-    const user = requireAuth(authHeader);
+    const user = await requireAuth(authHeader);
     
     if (user.role !== 'provider') {
       return NextResponse.json(
@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { date, startTime, endTime } = createSlotSchema.parse(body);
     
-    const profile = db.getProviderProfileByUserId(user.id);
+    const profile = await db.getProviderProfileByUserId(user.id);
     if (!profile) {
       return NextResponse.json(
         { error: 'Profile not found' },
@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
     }
     
     // Check if slot already exists
-    const existingSlots = db.getProviderAvailability(profile.id, date);
+    const existingSlots = await db.getProviderAvailability(profile.id, date);
     const conflictingSlot = existingSlots.find(
       s => (s.startTime <= startTime && s.endTime > startTime) ||
            (s.startTime < endTime && s.endTime >= endTime) ||
@@ -116,7 +116,7 @@ export async function POST(request: NextRequest) {
     
     const slots = profile.availability || [];
     slots.push(newSlot);
-    db.updateProviderProfile(profile.id, {
+    await db.updateProviderProfile(profile.id, {
       availability: slots,
     });
     
@@ -149,7 +149,7 @@ export async function POST(request: NextRequest) {
 export async function PATCH(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization');
-    const user = requireAuth(authHeader);
+    const user = await requireAuth(authHeader);
     
     if (user.role !== 'provider') {
       return NextResponse.json(
@@ -161,7 +161,7 @@ export async function PATCH(request: NextRequest) {
     const body = await request.json();
     const { slotId, ...updates } = updateSlotSchema.parse(body);
     
-    const profile = db.getProviderProfileByUserId(user.id);
+    const profile = await db.getProviderProfileByUserId(user.id);
     if (!profile) {
       return NextResponse.json(
         { error: 'Profile not found' },
@@ -169,7 +169,7 @@ export async function PATCH(request: NextRequest) {
       );
     }
     
-    const success = db.updateAvailabilitySlot(profile.id, slotId, updates);
+    const success = await db.updateAvailabilitySlot(profile.id, slotId, updates);
     
     if (!success) {
       return NextResponse.json(
@@ -207,7 +207,7 @@ export async function PATCH(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization');
-    const user = requireAuth(authHeader);
+    const user = await requireAuth(authHeader);
     
     if (user.role !== 'provider') {
       return NextResponse.json(
@@ -226,7 +226,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
     
-    const profile = db.getProviderProfileByUserId(user.id);
+    const profile = await db.getProviderProfileByUserId(user.id);
     if (!profile) {
       return NextResponse.json(
         { error: 'Profile not found' },
@@ -253,7 +253,7 @@ export async function DELETE(request: NextRequest) {
     }
     
     slots.splice(slotIndex, 1);
-    db.updateProviderProfile(profile.id, {
+    await db.updateProviderProfile(profile.id, {
       availability: slots,
     });
     

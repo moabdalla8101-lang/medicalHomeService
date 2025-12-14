@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 export async function GET(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization');
-    const user = requireAuth(authHeader);
+    const user = await requireAuth(authHeader);
     
     if (user.role !== 'admin') {
       return NextResponse.json(
@@ -17,8 +17,8 @@ export async function GET(request: NextRequest) {
       );
     }
     
-    const allBookings = Array.from((db as any).bookings.values());
-    const config = db.getSystemConfig();
+    const allBookings = await db.getAllBookings();
+    const config = await db.getSystemConfig();
     
     const completedBookings = allBookings.filter((b: any) => 
       b.status === 'completed' && b.paymentStatus === 'paid'

@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 export async function GET(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization');
-    const user = requireAuth(authHeader);
+    const user = await requireAuth(authHeader);
     
     if (user.role !== 'admin') {
       return NextResponse.json(
@@ -17,13 +17,17 @@ export async function GET(request: NextRequest) {
       );
     }
     
-    const allBookings = Array.from((db as any).bookings.values());
+    const allBookings = await db.getAllBookings();
     
     return NextResponse.json({
       success: true,
       bookings: allBookings
-        .sort((a: any, b: any) => b.createdAt.getTime() - a.createdAt.getTime())
-        .map((b: any) => ({
+        .sort((a, b) => {
+          const aTime = a.createdAt instanceof Date ? a.createdAt.getTime() : new Date(a.createdAt).getTime();
+          const bTime = b.createdAt instanceof Date ? b.createdAt.getTime() : new Date(b.createdAt).getTime();
+          return bTime - aTime;
+        })
+        .map((b) => ({
           id: b.id,
           status: b.status,
           type: b.type,

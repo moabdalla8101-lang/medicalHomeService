@@ -9,7 +9,7 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const provider = db.getProviderProfile(params.id);
+    const provider = await db.getProviderProfile(params.id);
     
     if (!provider || provider.status !== 'approved') {
       return NextResponse.json(
@@ -19,7 +19,7 @@ export async function GET(
     }
     
     // Get reviews
-    const reviews = db.getProviderReviews(provider.id);
+    const reviews = await db.getProviderReviews(provider.id);
     
     // Get availability for next 7 days
     const today = new Date();
@@ -28,7 +28,7 @@ export async function GET(
       const date = new Date(today);
       date.setDate(date.getDate() + i);
       const dateStr = date.toISOString().split('T')[0];
-      const slots = db.getProviderAvailability(provider.id, dateStr);
+      const slots = await db.getProviderAvailability(provider.id, dateStr);
       availability.push({
         date: dateStr,
         slots: slots.filter(s => s.isAvailable && !s.isBooked),

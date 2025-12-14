@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 export async function POST(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization');
-    const user = requireAuth(authHeader);
+    const user = await requireAuth(authHeader);
     
     if (user.role !== 'provider') {
       return NextResponse.json(
@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
     const base64 = buffer.toString('base64');
     const dataUrl = `data:${file.type};base64,${base64}`;
     
-    const profile = db.getProviderProfileByUserId(user.id);
+    const profile = await db.getProviderProfileByUserId(user.id);
     if (!profile) {
       return NextResponse.json(
         { error: 'Profile not found' },
@@ -44,14 +44,14 @@ export async function POST(request: NextRequest) {
     
     if (type === 'profile') {
       // Update profile photo
-      db.updateProviderProfile(profile.id, {
+      await db.updateProviderProfile(profile.id, {
         profilePhoto: dataUrl,
       });
     } else if (type === 'gallery') {
       // Add to gallery
       const gallery = profile.gallery || [];
       gallery.push(dataUrl);
-      db.updateProviderProfile(profile.id, {
+      await db.updateProviderProfile(profile.id, {
         gallery,
       });
     }

@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 export async function GET(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization');
-    const user = requireAuth(authHeader);
+    const user = await requireAuth(authHeader);
     
     if (user.role !== 'admin') {
       return NextResponse.json(
@@ -17,7 +17,14 @@ export async function GET(request: NextRequest) {
       );
     }
     
-    const allReviews = Array.from((db as any).reviews.values());
+    // Get all reviews - we'll need to add a method to get all reviews
+    // For now, we'll get reviews from all providers
+    const allProviders = await db.getAllProviders();
+    const allReviews: any[] = [];
+    for (const provider of allProviders) {
+      const reviews = await db.getProviderReviews(provider.id);
+      allReviews.push(...reviews);
+    }
     const pendingReviews = allReviews.filter((r: any) => r.status === 'pending');
     
     return NextResponse.json({

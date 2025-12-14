@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 export async function GET(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization');
-    const user = requireAuth(authHeader);
+    const user = await requireAuth(authHeader);
     
     if (user.role !== 'provider') {
       return NextResponse.json(
@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
       );
     }
     
-    const profile = db.getProviderProfileByUserId(user.id);
+    const profile = await db.getProviderProfileByUserId(user.id);
     if (!profile) {
       return NextResponse.json(
         { error: 'Profile not found' },
@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
       );
     }
     
-    const bookings = db.getProviderBookings(profile.id);
+    const bookings = await db.getProviderBookings(profile.id);
     const today = new Date().toISOString().split('T')[0];
     
     const todayBookings = bookings.filter(b => 

@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 export async function GET(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization');
-    const user = requireAuth(authHeader);
+    const user = await requireAuth(authHeader);
     
     if (user.role !== 'admin') {
       return NextResponse.json(
@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
       );
     }
     
-    const providers = db.getAllProviders({ status: 'pending' });
+    const providers = await db.getAllProviders({ status: 'pending' });
     
     return NextResponse.json({
       success: true,

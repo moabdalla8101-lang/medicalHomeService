@@ -11,7 +11,7 @@ export async function POST(
 ) {
   try {
     const authHeader = request.headers.get('authorization');
-    const user = requireAuth(authHeader);
+    const user = await requireAuth(authHeader);
     
     if (user.role !== 'admin') {
       return NextResponse.json(
@@ -20,7 +20,7 @@ export async function POST(
       );
     }
     
-    const profile = db.getProviderProfile(params.id);
+    const profile = await db.getProviderProfile(params.id);
     if (!profile) {
       return NextResponse.json(
         { error: 'Provider not found' },
@@ -28,7 +28,7 @@ export async function POST(
       );
     }
     
-    const updated = db.updateProviderProfile(params.id, {
+    const updated = await db.updateProviderProfile(params.id, {
       status: 'approved',
     });
     
@@ -40,9 +40,9 @@ export async function POST(
     }
     
     // Notify provider
-    const providerUser = db.getUserById(updated.userId);
+    const providerUser = await db.getUserById(updated.userId);
     if (providerUser) {
-      db.createNotification({
+      await db.createNotification({
         userId: providerUser.id,
         type: 'provider_approved',
         title: 'Profile Approved',

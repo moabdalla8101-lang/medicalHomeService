@@ -11,7 +11,7 @@ export async function POST(
 ) {
   try {
     const authHeader = request.headers.get('authorization');
-    const user = requireAuth(authHeader);
+    const user = await requireAuth(authHeader);
     
     if (user.role !== 'admin') {
       return NextResponse.json(
@@ -21,7 +21,7 @@ export async function POST(
     }
     
     // Update review status using db method
-    const updated = db.updateReview(params.id, {
+    const updated = await db.updateReview(params.id, {
       status: 'rejected',
     });
     

@@ -16,7 +16,7 @@ const updateSettingsSchema = z.object({
 export async function GET(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization');
-    const user = requireAuth(authHeader);
+    const user = await requireAuth(authHeader);
     
     if (user.role !== 'admin') {
       return NextResponse.json(
@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
       );
     }
     
-    const config = db.getSystemConfig();
+    const config = await db.getSystemConfig();
     
     return NextResponse.json({
       success: true,
@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
 export async function PATCH(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization');
-    const user = requireAuth(authHeader);
+    const user = await requireAuth(authHeader);
     
     if (user.role !== 'admin') {
       return NextResponse.json(
@@ -66,7 +66,7 @@ export async function PATCH(request: NextRequest) {
     const body = await request.json();
     const updates = updateSettingsSchema.parse(body);
     
-    const updated = db.updateSystemConfig(updates, user.id);
+    const updated = await db.updateSystemConfig(updates, user.id);
     
     return NextResponse.json({
       success: true,

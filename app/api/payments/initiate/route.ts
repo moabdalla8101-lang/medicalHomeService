@@ -14,7 +14,7 @@ const initiatePaymentSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization');
-    const user = requireAuth(authHeader);
+    const user = await requireAuth(authHeader);
     
     if (user.role !== 'user') {
       return NextResponse.json(

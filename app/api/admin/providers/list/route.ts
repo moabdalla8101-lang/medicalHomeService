@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 export async function GET(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization');
-    const user = requireAuth(authHeader);
+    const user = await requireAuth(authHeader);
     
     if (user.role !== 'admin') {
       return NextResponse.json(
@@ -17,22 +17,22 @@ export async function GET(request: NextRequest) {
       );
     }
     
-    const providers = db.getAllProviders();
+    const providers = await db.getAllProviders();
     
     // Get phone numbers for each provider
-    const providersWithPhones = providers.map(provider => {
-      const user = db.getUserById(provider.userId);
+    const providersWithPhones = await Promise.all(providers.map(async (provider) => {
+      const providerUser = await db.getUserById(provider.userId);
       return {
         id: provider.id,
         name: provider.name,
         specialty: provider.specialty,
-        phone: user?.phone || 'N/A',
+        phone: providerUser?.phone || 'N/A',
         status: provider.status,
         emergencyAvailable: provider.emergencyAvailable,
         rating: provider.rating,
         totalReviews: provider.totalReviews,
       };
-    });
+    }));
     
     return NextResponse.json({
       success: true,

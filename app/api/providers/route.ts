@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
     const searchQuery = searchParams.get('search') || undefined;
     
     // Get all approved providers
-    let providers = db.getAllProviders({ status: 'approved' });
+    let providers = await db.getAllProviders({ status: 'approved' });
     
     // Apply filters
     if (serviceType) {

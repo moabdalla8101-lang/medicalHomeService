@@ -15,7 +15,7 @@ const createReviewSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization');
-    const user = requireAuth(authHeader);
+    const user = await requireAuth(authHeader);
     
     if (user.role !== 'user') {
       return NextResponse.json(
@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     const { bookingId, rating, comment } = createReviewSchema.parse(body);
     
     // Verify booking belongs to user and is completed
-    const booking = db.getBooking(bookingId);
+    const booking = await db.getBooking(bookingId);
     if (!booking) {
       return NextResponse.json(
         { error: 'Booking not found' },
@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
     }
     
     // Check if review already exists
-    const existingReviews = Array.from((db as any).reviews.values());
+    const existingReviews = await db.getProviderReviews(booking.providerId);
     const existingReview = existingReviews.find((r: any) => r.bookingId === bookingId);
     if (existingReview) {
       return NextResponse.json(
@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
     }
     
     // Create review (pending moderation)
-    const review = db.createReview({
+    const review = await db.createReview({
       bookingId,
       userId: user.id,
       providerId: booking.providerId,
@@ -114,7 +114,7 @@ export async function GET(request: NextRequest) {
       );
     }
     
-    const reviews = db.getProviderReviews(providerId);
+    const reviews = await db.getProviderReviews(providerId);
     
     return NextResponse.json({
       success: true,
