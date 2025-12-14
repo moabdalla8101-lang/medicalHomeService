@@ -137,7 +137,7 @@ export default function ProviderProfile({ provider }: ProviderProfileProps) {
     <div className="min-h-screen bg-gray-50" dir={isRTL ? 'rtl' : 'ltr'}>
       {/* Header */}
       <div className="bg-white shadow-sm">
-        <div className="max-w-4xl mx-auto px-4 py-6">
+        <div className={`max-w-4xl mx-auto px-4 py-6 ${isRTL ? 'text-right' : 'text-left'}`} dir={isRTL ? 'rtl' : 'ltr'}>
           <div className={`flex items-center justify-between mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
             {/* Back Button */}
             <button
@@ -169,7 +169,7 @@ export default function ProviderProfile({ provider }: ProviderProfileProps) {
             </div>
 
             {/* Info */}
-            <div className={`flex-1 ${isRTL ? 'text-right' : 'text-left'}`}>
+            <div className={`flex-1 ${isRTL ? 'text-right' : 'text-left'}`} dir={isRTL ? 'rtl' : 'ltr'}>
               <h1 className={`text-2xl sm:text-3xl font-bold text-gray-900 mb-2 ${isRTL ? 'text-right' : 'text-left'}`}>{provider.name}</h1>
               <p className={`text-base sm:text-lg text-gray-600 mb-2 ${isRTL ? 'text-right' : 'text-left'}`}>{provider.specialty}</p>
               
