@@ -109,12 +109,20 @@ export async function POST(request: NextRequest) {
         });
       } else if (providerUser.role !== 'provider') {
         // Update role to provider
-        providerUser = await db.updateUser(providerUser.id, { role: 'provider' });
+        const updated = await db.updateUser(providerUser.id, { role: 'provider' });
+        if (updated) providerUser = updated;
       }
     } else {
       return NextResponse.json(
         { error: 'Either userId or phone must be provided' },
         { status: 400 }
+      );
+    }
+    
+    if (!providerUser) {
+      return NextResponse.json(
+        { error: 'Failed to get or create user' },
+        { status: 500 }
       );
     }
     
