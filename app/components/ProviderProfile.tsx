@@ -2,9 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations, useLocale } from 'next-intl';
 import { Star, MapPin, Clock, AlertCircle, Calendar, DollarSign, MessageSquare, ArrowLeft } from 'lucide-react';
 import BookingModal from './BookingModal';
 import PhoneAuth from './PhoneAuth';
+import LanguageSwitcher from './LanguageSwitcher';
 
 interface ProviderProfileProps {
   provider: {
@@ -51,6 +53,9 @@ interface ProviderProfileProps {
 
 export default function ProviderProfile({ provider }: ProviderProfileProps) {
   const router = useRouter();
+  const t = useTranslations();
+  const locale = useLocale();
+  const isRTL = locale === 'ar';
   const [selectedService, setSelectedService] = useState<string | null>(null);
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -102,7 +107,7 @@ export default function ProviderProfile({ provider }: ProviderProfileProps) {
 
   const handleBook = (type: 'standard' | 'emergency') => {
     if (provider.services.length === 0) {
-      alert('No services available');
+      alert(t('booking.noServicesAvailable') || 'No services available');
       return;
     }
 
@@ -129,22 +134,27 @@ export default function ProviderProfile({ provider }: ProviderProfileProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50" dir={isRTL ? 'rtl' : 'ltr'}>
       {/* Header */}
       <div className="bg-white shadow-sm">
         <div className="max-w-4xl mx-auto px-4 py-6">
-          {/* Back Button */}
-          <button
-            onClick={() => router.push('/')}
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4 transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            <span className="font-medium">Back to Home</span>
-          </button>
+          <div className={`flex items-center justify-between mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
+            {/* Back Button */}
+            <button
+              onClick={() => router.push(`/${locale}`)}
+              className={`flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors ${isRTL ? 'flex-row-reverse' : ''}`}
+            >
+              <ArrowLeft className={`w-5 h-5 ${isRTL ? 'rotate-180' : ''}`} />
+              <span className="font-medium">{t('provider.backToHome')}</span>
+            </button>
+            
+            {/* Language Switcher */}
+            <LanguageSwitcher />
+          </div>
           
-          <div className="flex items-start gap-6">
+          <div className={`flex items-start gap-6 ${isRTL ? 'flex-row-reverse' : ''}`}>
             {/* Profile Photo */}
-            <div className="relative w-32 h-32 rounded-full overflow-hidden bg-gradient-to-br from-blue-100 to-indigo-100 flex-shrink-0">
+            <div className="relative w-24 h-24 sm:w-32 sm:h-32 rounded-full overflow-hidden bg-gradient-to-br from-blue-100 to-indigo-100 flex-shrink-0">
               {provider.profilePhoto ? (
                 <img
                   src={provider.profilePhoto}
@@ -160,17 +170,17 @@ export default function ProviderProfile({ provider }: ProviderProfileProps) {
 
             {/* Info */}
             <div className="flex-1">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">{provider.name}</h1>
-              <p className="text-lg text-gray-600 mb-2">{provider.specialty}</p>
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">{provider.name}</h1>
+              <p className="text-base sm:text-lg text-gray-600 mb-2">{provider.specialty}</p>
               
               {/* Medical Centre */}
               {provider.medicalCentre && (
-                <div className="flex items-center gap-2 text-gray-600 mb-4">
+                <div className={`flex items-center gap-2 text-gray-600 mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
                   <MapPin className="w-5 h-5" />
-                  <div>
+                  <div className={isRTL ? 'text-right' : 'text-left'}>
                     <span className="font-medium">{provider.medicalCentre.name}</span>
                     {provider.medicalCentre.address && (
-                      <span className="text-sm text-gray-500 ml-2">
+                      <span className={`text-sm text-gray-500 ${isRTL ? 'mr-2' : 'ml-2'}`}>
                         - {provider.medicalCentre.address}
                       </span>
                     )}
@@ -179,43 +189,43 @@ export default function ProviderProfile({ provider }: ProviderProfileProps) {
               )}
               
               {/* Rating */}
-              <div className="flex items-center gap-2 mb-4">
+              <div className={`flex items-center gap-2 mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
                 <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
                 <span className="text-lg font-semibold">{provider.rating.toFixed(1)}</span>
-                <span className="text-gray-500">({provider.totalReviews} reviews)</span>
+                <span className="text-gray-500">({provider.totalReviews} {t('provider.reviews')})</span>
               </div>
 
               {/* Experience */}
               {provider.experience && (
-                <div className="flex items-center gap-2 text-gray-600 mb-4">
+                <div className={`flex items-center gap-2 text-gray-600 mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
                   <Clock className="w-5 h-5" />
-                  <span>{provider.experience} years of experience</span>
+                  <span>{provider.experience} {t('provider.experience')}</span>
                 </div>
               )}
 
               {/* Emergency Badge */}
               {provider.emergencyAvailable && (
-                <div className="inline-flex items-center gap-2 bg-red-50 text-red-700 px-3 py-1 rounded-full text-sm font-semibold mb-4">
+                <div className={`inline-flex items-center gap-2 bg-red-50 text-red-700 px-3 py-1 rounded-full text-sm font-semibold mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
                   <AlertCircle className="w-4 h-4" />
-                  Emergency Services Available
+                  {t('provider.emergencyAvailable')}
                 </div>
               )}
 
               {/* CTAs */}
-              <div className="flex gap-3 mt-6">
+              <div className={`flex gap-3 mt-6 flex-wrap ${isRTL ? 'flex-row-reverse' : ''}`}>
                 <button
                   onClick={() => handleBook('standard')}
-                  className="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                  className="px-4 sm:px-6 py-2 sm:py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors text-sm sm:text-base"
                 >
-                  Book Appointment
+                  {t('provider.bookAppointment')}
                 </button>
                 {provider.emergencyAvailable && (
                   <button
                     onClick={() => handleBook('emergency')}
-                    className="px-6 py-3 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition-colors flex items-center gap-2"
+                    className={`px-4 sm:px-6 py-2 sm:py-3 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition-colors flex items-center gap-2 text-sm sm:text-base ${isRTL ? 'flex-row-reverse' : ''}`}
                   >
-                    <AlertCircle className="w-5 h-5" />
-                    Emergency Booking
+                    <AlertCircle className="w-4 sm:w-5 h-4 sm:h-5" />
+                    {t('provider.emergencyBooking')}
                   </button>
                 )}
               </div>

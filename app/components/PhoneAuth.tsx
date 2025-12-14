@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useTranslations, useLocale } from 'next-intl';
 import { Phone, Loader2, CheckCircle2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 

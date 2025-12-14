@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations, useLocale } from 'next-intl';
 import { X, MapPin, Calendar, Clock, DollarSign, AlertCircle, CheckCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -33,6 +34,9 @@ export default function BookingModal({
   type,
   onClose,
 }: BookingModalProps) {
+  const t = useTranslations();
+  const locale = useLocale();
+  const isRTL = locale === 'ar';
   const [step, setStep] = useState<'service' | 'datetime' | 'address' | 'review' | 'confirmation'>(
     type === 'emergency' ? 'address' : 'service'
   );
@@ -49,15 +53,15 @@ export default function BookingModal({
 
   const handleNext = () => {
     if (step === 'service' && !selectedService) {
-      toast.error('Please select a service');
+      toast.error(t('booking.selectService'));
       return;
     }
     if (step === 'datetime' && (!selectedDate || !selectedSlot)) {
-      toast.error('Please select date and time');
+      toast.error(t('booking.selectDateTime'));
       return;
     }
     if (step === 'address' && !address.trim()) {
-      toast.error('Please enter an address');
+      toast.error(t('booking.enterAddress'));
       return;
     }
     
@@ -128,18 +132,18 @@ export default function BookingModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" dir={isRTL ? 'rtl' : 'ltr'}>
       <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between">
-          <h2 className="text-2xl font-bold">
-            {type === 'emergency' ? 'Emergency Booking' : 'Book Appointment'}
+        <div className={`sticky top-0 bg-white border-b px-4 sm:px-6 py-4 flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
+          <h2 className="text-xl sm:text-2xl font-bold">
+            {type === 'emergency' ? t('booking.emergency') : t('booking.title')}
           </h2>
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700"
           >
-            <X className="w-6 h-6" />
+            <X className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
         </div>
 

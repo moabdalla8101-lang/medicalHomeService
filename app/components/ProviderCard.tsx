@@ -1,6 +1,7 @@
 'use client';
 
 import { Star, MapPin, Clock, AlertCircle } from 'lucide-react';
+import { useTranslations, useLocale } from 'next-intl';
 import { ProviderProfile } from '@/lib/types';
 import Image from 'next/image';
 
@@ -19,6 +20,9 @@ interface ProviderCardProps {
 }
 
 export default function ProviderCard({ provider, onClick }: ProviderCardProps) {
+  const t = useTranslations();
+  const locale = useLocale();
+  const isRTL = locale === 'ar';
   const minPrice = Math.min(...provider.services.map(s => s.price));
   const maxPrice = Math.max(...provider.services.map(s => s.price));
   
@@ -26,6 +30,7 @@ export default function ProviderCard({ provider, onClick }: ProviderCardProps) {
     <div
       onClick={onClick}
       className="bg-white rounded-xl shadow-md overflow-hidden cursor-pointer hover:shadow-lg transition-shadow duration-200 group"
+      dir={isRTL ? 'rtl' : 'ltr'}
     >
       {/* Image */}
       <div className="relative w-full h-48 bg-gradient-to-br from-blue-100 to-indigo-100 overflow-hidden">
@@ -43,15 +48,15 @@ export default function ProviderCard({ provider, onClick }: ProviderCardProps) {
         
         {/* Emergency Badge */}
         {provider.emergencyAvailable && (
-          <div className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
+          <div className={`absolute top-2 ${isRTL ? 'left-2' : 'right-2'} bg-red-500 text-white px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1`}>
             <AlertCircle className="w-3 h-3" />
-            Emergency
+            {t('home.emergency')}
           </div>
         )}
         
         {/* Availability Badge */}
-        <div className="absolute bottom-2 left-2 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-semibold">
-          Available Now
+        <div className={`absolute bottom-2 ${isRTL ? 'right-2' : 'left-2'} bg-green-500 text-white px-2 py-1 rounded-full text-xs font-semibold`}>
+          {t('home.available')}
         </div>
       </div>
       

@@ -3,8 +3,10 @@
 import { useState, useEffect } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { Search, Filter, Loader2 } from 'lucide-react';
+import { useTranslations, useLocale } from 'next-intl';
 import ProviderCard from './ProviderCard';
 import ProviderFilters from './ProviderFilters';
+import LanguageSwitcher from './LanguageSwitcher';
 import { useRouter } from 'next/navigation';
 
 interface Provider {
@@ -20,6 +22,9 @@ interface Provider {
 
 export default function ProviderFeed() {
   const router = useRouter();
+  const t = useTranslations();
+  const locale = useLocale();
+  const isRTL = locale === 'ar';
   const [providers, setProviders] = useState<Provider[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -78,20 +83,23 @@ export default function ProviderFeed() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50" dir={isRTL ? 'rtl' : 'ltr'}>
       {/* Header */}
       <div className="bg-white shadow-sm sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center gap-4">
+          <div className={`flex items-center gap-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
+            {/* Language Switcher */}
+            <LanguageSwitcher />
+            
             {/* Search */}
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Search className={`absolute ${isRTL ? 'right-3' : 'left-3'} top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5`} />
               <input
                 type="text"
-                placeholder="Search providers, specialties..."
+                placeholder={t('home.searchPlaceholder')}
                 value={filters.search}
                 onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                className={`w-full ${isRTL ? 'pr-10 pl-4 text-right' : 'pl-10 pr-4 text-left'} py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none`}
               />
             </div>
             
@@ -101,7 +109,7 @@ export default function ProviderFeed() {
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
             >
               <Filter className="w-5 h-5" />
-              Filters
+              {t('home.filterBy')}
             </button>
           </div>
         </div>
@@ -128,7 +136,7 @@ export default function ProviderFeed() {
           </div>
         ) : providers.length === 0 ? (
           <div className="text-center py-20">
-            <p className="text-gray-500 text-lg">No providers found</p>
+            <p className="text-gray-500 text-lg">{t('home.noProviders')}</p>
           </div>
         ) : (
           <InfiniteScroll
@@ -140,13 +148,13 @@ export default function ProviderFeed() {
                 <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
               </div>
             }
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
           >
             {providers.map((provider) => (
               <ProviderCard
                 key={provider.id}
                 provider={provider}
-                onClick={() => router.push(`/providers/${provider.id}`)}
+                onClick={() => router.push(`/${locale}/providers/${provider.id}`)}
               />
             ))}
           </InfiniteScroll>
