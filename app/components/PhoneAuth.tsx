@@ -12,6 +12,9 @@ interface PhoneAuthProps {
 }
 
 export default function PhoneAuth({ onSuccess, onAuthSuccess, role = 'user' }: PhoneAuthProps) {
+  const t = useTranslations();
+  const locale = useLocale();
+  const isRTL = locale === 'ar';
   const handleSuccess = onAuthSuccess || onSuccess;
   const [phone, setPhone] = useState('');
   const [normalizedPhone, setNormalizedPhone] = useState('');
@@ -98,12 +101,12 @@ export default function PhoneAuth({ onSuccess, onAuthSuccess, role = 'user' }: P
         throw new Error(data.error || 'Invalid OTP');
       }
 
-      toast.success('Login successful!');
+      toast.success(t('auth.loginSuccess'));
       if (handleSuccess) {
         handleSuccess(data.token, data.user);
       }
     } catch (error: any) {
-      toast.error(error.message || 'Invalid OTP');
+      toast.error(error.message || t('auth.invalidOTP'));
     } finally {
       setLoading(false);
     }
