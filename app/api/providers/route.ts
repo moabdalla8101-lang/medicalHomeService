@@ -80,6 +80,12 @@ export async function GET(request: NextRequest) {
       rating: provider.rating,
       totalReviews: provider.totalReviews,
       emergencyAvailable: provider.emergencyAvailable,
+      medicalCentre: provider.medicalCentre ? {
+        id: provider.medicalCentre.id,
+        name: provider.medicalCentre.name,
+        address: provider.medicalCentre.address,
+        phone: provider.medicalCentre.phone,
+      } : null,
       services: provider.services.map(s => ({
         id: s.id,
         name: s.name,
