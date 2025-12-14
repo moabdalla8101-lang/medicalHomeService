@@ -30,12 +30,12 @@ function generateAvailabilitySlots(providerId: string): AvailabilitySlot[] {
   return slots;
 }
 
-export function seedDummyProviders() {
+export async function seedDummyProviders() {
   // Import db here to avoid circular dependency
-  const { db } = require('./db');
+  const { db } = await import('./db');
   
   // Check if providers already exist
-  const existingProviders = db.getAllProviders();
+  const existingProviders = await db.getAllProviders();
   if (existingProviders.length > 0) {
     console.log('[SEED] Providers already exist, skipping seed');
     return existingProviders.length;
@@ -257,15 +257,16 @@ export function seedDummyProviders() {
   ];
 
   // Create dummy users first
-  providers.forEach((providerData, index) => {
-    const user = db.createUser({
+  for (let index = 0; index < providers.length; index++) {
+    const providerData = providers[index];
+    const user = await db.createUser({
       phone: `+965${12345670 + index}`,
       role: 'provider',
       name: providerData.name,
     });
 
     // Update provider data with correct userId and providerId
-    const profile = db.createProviderProfile({
+    const profile = await db.createProviderProfile({
       userId: user.id,
       name: providerData.name,
       bio: providerData.bio,
@@ -286,23 +287,18 @@ export function seedDummyProviders() {
       maxBookingsPerDay: providerData.maxBookingsPerDay,
     });
 
-    // Update services with correct providerId
-    const updatedServices = profile.services.map((s: any) => ({
-      ...s,
-      providerId: profile.id,
-    }));
-
     // Generate availability slots
     const availability = generateAvailabilitySlots(profile.id);
 
-    // Update profile with services and availability
-    db.updateProviderProfile(profile.id, {
-      services: updatedServices,
+    // Update profile with availability slots
+    // Note: In Prisma, availability slots are created as part of the profile creation
+    // So we need to update the profile to add them
+    await db.updateProviderProfile(profile.id, {
       availability,
     });
 
     console.log(`[SEED] Created provider: ${profile.name} (${profile.specialty})`);
-  });
+  }
 
   console.log(`[SEED] Created ${providers.length} dummy providers`);
   return providers.length;

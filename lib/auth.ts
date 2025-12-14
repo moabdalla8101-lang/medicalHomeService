@@ -23,7 +23,7 @@ export async function sendOTP(phone: string, code: string): Promise<boolean> {
   
   // Store OTP with longer expiry for development (10 minutes)
   const expirySeconds = process.env.NODE_ENV === 'development' ? 600 : 300;
-  db.setOTP(phone, code, expirySeconds);
+  await db.setOTP(phone, code, expirySeconds);
   
   if (process.env.NODE_ENV === 'development') {
     console.log(`[AUTH] OTP stored for ${phone}: ${code} (expires in ${expirySeconds}s)`);
@@ -93,7 +93,7 @@ export async function verifyOTPAndAuthenticate(
   }
   
   // Verify OTP - try with exact phone first, then try variations
-  let isValid = db.verifyOTP(normalizedPhone, otp);
+  let isValid = await db.verifyOTP(normalizedPhone, otp);
   
   // If not found, try without + prefix (in case of normalization mismatch)
   if (!isValid && normalizedPhone.startsWith('+')) {
@@ -101,7 +101,7 @@ export async function verifyOTPAndAuthenticate(
     if (process.env.NODE_ENV === 'development') {
       console.log('[AUTH] Trying without + prefix:', phoneWithoutPlus);
     }
-    isValid = db.verifyOTP(phoneWithoutPlus, otp);
+    isValid = await db.verifyOTP(phoneWithoutPlus, otp);
   }
   
   if (process.env.NODE_ENV === 'development') {
@@ -113,7 +113,7 @@ export async function verifyOTPAndAuthenticate(
   }
   
   // Find or create user
-  let user = db.getUserByPhone(normalizedPhone);
+  let user = await db.getUserByPhone(normalizedPhone);
   
   if (process.env.NODE_ENV === 'development') {
     console.log('[AUTH] User lookup:', { 
@@ -126,7 +126,7 @@ export async function verifyOTPAndAuthenticate(
   if (!user) {
     // Create new user with the specified role (or default to 'user')
     const newRole = role || 'user';
-    user = db.createUser({
+    user = await db.createUser({
       phone: normalizedPhone,
       role: newRole,
     });
@@ -140,7 +140,8 @@ export async function verifyOTPAndAuthenticate(
       if (process.env.NODE_ENV === 'development') {
         console.log('[AUTH] Updating user role from', user.role, 'to', role);
       }
-      user = db.updateUser(user.id, { role })!;
+      const updated = await db.updateUser(user.id, { role });
+      if (updated) user = updated;
     } else {
       if (process.env.NODE_ENV === 'development') {
         console.log('[AUTH] User already has role:', role);
@@ -162,10 +163,11 @@ export async function verifyOTPAndAuthenticate(
   // Update user session
   const sessionExpiry = new Date();
   sessionExpiry.setDate(sessionExpiry.getDate() + 7); // 7 days
-  user = db.updateUser(user.id, {
+  const updated = await db.updateUser(user.id, {
     sessionToken: token,
     sessionExpiry,
-  })!;
+  });
+  if (updated) user = updated;
   
   return { user, token };
 }
@@ -181,11 +183,11 @@ export function verifyToken(token: string): AuthTokenPayload | null {
 }
 
 // Get user from token
-export function getUserFromToken(token: string): User | null {
+export async function getUserFromToken(token: string): Promise<User | null> {
   const payload = verifyToken(token);
   if (!payload) return null;
   
-  const user = db.getUserById(payload.userId);
+  const user = await db.getUserById(payload.userId);
   if (!user || user.sessionToken !== token) return null;
   
   // Check if session expired
@@ -197,13 +199,13 @@ export function getUserFromToken(token: string): User | null {
 }
 
 // Middleware helper for API routes
-export function requireAuth(authHeader: string | null): User {
+export async function requireAuth(authHeader: string | null): Promise<User> {
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     throw new Error('Missing or invalid authorization header');
   }
   
   const token = authHeader.substring(7);
-  const user = getUserFromToken(token);
+  const user = await getUserFromToken(token);
   
   if (!user) {
     throw new Error('Invalid or expired token');

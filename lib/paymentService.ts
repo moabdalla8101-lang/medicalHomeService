@@ -23,7 +23,7 @@ export async function initiateKNETPayment(
   bookingId: string,
   returnUrl: string
 ): Promise<KNETPaymentResponse> {
-  const booking = db.getBooking(bookingId);
+  const booking = await db.getBooking(bookingId);
   
   if (!booking) {
     return {
@@ -42,7 +42,7 @@ export async function initiateKNETPayment(
   }
   
   // Create payment record
-  const payment = db.createPayment({
+  const payment = await db.createPayment({
     bookingId: booking.id,
     userId: booking.userId,
     amount: booking.totalPrice,
@@ -74,32 +74,27 @@ export async function processPayment(
   transactionId: string,
   success: boolean
 ): Promise<boolean> {
-  const payment = db.getPayment(paymentId);
+  const payment = await db.getPayment(paymentId);
   if (!payment) return false;
   
-  const booking = db.getBooking(payment.bookingId);
+  const booking = await db.getBooking(payment.bookingId);
   if (!booking) return false;
   
   if (success) {
-    // Update payment status - use direct access to payments map
-    const { db } = await import('./db');
-    const paymentsMap = (db as any).payments;
-    const updatedPayment = {
-      ...payment,
-      status: 'completed' as const,
+    // Update payment status
+    await db.updatePayment(paymentId, {
+      status: 'completed',
       knetTransactionId: transactionId,
-      updatedAt: new Date(),
-    };
-    paymentsMap.set(paymentId, updatedPayment);
+    });
     
     // Update booking payment status
-    db.updateBooking(booking.id, {
+    await db.updateBooking(booking.id, {
       paymentStatus: 'paid',
       paymentId: payment.id,
     });
     
     // Create notification
-    db.createNotification({
+    await db.createNotification({
       userId: booking.userId,
       type: 'booking_confirmed',
       title: 'Payment Successful',
@@ -111,46 +106,35 @@ export async function processPayment(
     return true;
   } else {
     // Update payment status to failed
-    const { db } = await import('./db');
-    const paymentsMap = (db as any).payments;
-    const updatedPayment = {
-      ...payment,
-      status: 'failed' as const,
-      updatedAt: new Date(),
-    };
-    paymentsMap.set(paymentId, updatedPayment);
+    await db.updatePayment(paymentId, {
+      status: 'failed',
+    });
     
     return false;
   }
 }
 
 export async function refundPayment(paymentId: string, reason?: string): Promise<boolean> {
-  const payment = db.getPayment(paymentId);
+  const payment = await db.getPayment(paymentId);
   if (!payment || payment.status !== 'completed') {
     return false;
   }
   
-  const booking = db.getBooking(payment.bookingId);
+  const booking = await db.getBooking(payment.bookingId);
   if (!booking) return false;
   
   // In production, call KNET refund API
   // For now, just update status
+  await db.updatePayment(paymentId, {
+    status: 'refunded',
+  });
   
-  const { db: dbInstance } = await import('./db');
-  const paymentsMap = (dbInstance as any).payments;
-  const updatedPayment = {
-    ...payment,
-    status: 'refunded' as const,
-    updatedAt: new Date(),
-  };
-  paymentsMap.set(paymentId, updatedPayment);
-  
-  db.updateBooking(booking.id, {
+  await db.updateBooking(booking.id, {
     paymentStatus: 'refunded',
   });
   
   // Create notification
-  db.createNotification({
+  await db.createNotification({
     userId: booking.userId,
     type: 'booking_cancelled',
     title: 'Payment Refunded',

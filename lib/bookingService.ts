@@ -15,9 +15,9 @@ export interface CreateBookingParams {
   notes?: string;
 }
 
-export function createBooking(params: CreateBookingParams): Booking {
-  const config = db.getSystemConfig();
-  const provider = db.getProviderProfile(params.providerId);
+export async function createBooking(params: CreateBookingParams): Promise<Booking> {
+  const config = await db.getSystemConfig();
+  const provider = await db.getProviderProfile(params.providerId);
   
   if (!provider) {
     throw new Error('Provider not found');
@@ -47,7 +47,7 @@ export function createBooking(params: CreateBookingParams): Booking {
   
   // Handle slot booking for standard bookings
   if (params.type === 'standard' && params.slotId) {
-    const slotUpdated = db.updateAvailabilitySlot(
+    const slotUpdated = await db.updateAvailabilitySlot(
       params.providerId,
       params.slotId,
       {
@@ -63,7 +63,7 @@ export function createBooking(params: CreateBookingParams): Booking {
   }
   
   // Create booking
-  const booking = db.createBooking({
+  const booking = await db.createBooking({
     userId: params.userId,
     providerId: params.providerId,
     serviceId: params.serviceId,
@@ -87,13 +87,13 @@ export function createBooking(params: CreateBookingParams): Booking {
   
   // Update slot with booking ID
   if (params.slotId) {
-    db.updateAvailabilitySlot(params.providerId, params.slotId, {
+    await db.updateAvailabilitySlot(params.providerId, params.slotId, {
       bookingId: booking.id,
     });
   }
   
   // Create notification
-  db.createNotification({
+  await db.createNotification({
     userId: params.userId,
     type: params.type === 'emergency' ? 'emergency_assigned' : 'booking_confirmed',
     title: params.type === 'emergency' 
@@ -107,9 +107,9 @@ export function createBooking(params: CreateBookingParams): Booking {
   });
   
   // If provider, notify them too
-  const providerUser = db.getUserById(provider.userId);
+  const providerUser = await db.getUserById(provider.userId);
   if (providerUser) {
-    db.createNotification({
+    await db.createNotification({
       userId: providerUser.id,
       type: 'booking_confirmed',
       title: 'New Booking',
@@ -122,13 +122,13 @@ export function createBooking(params: CreateBookingParams): Booking {
   return booking;
 }
 
-export function updateBookingStatus(
+export async function updateBookingStatus(
   bookingId: string,
   status: Booking['status'],
   updatedBy: 'user' | 'provider' | 'admin',
   cancellationReason?: string
-): Booking | null {
-  const booking = db.getBooking(bookingId);
+): Promise<Booking | null> {
+  const booking = await db.getBooking(bookingId);
   if (!booking) {
     throw new Error('Booking not found');
   }
@@ -147,7 +147,7 @@ export function updateBookingStatus(
     }),
   };
   
-  const updated = db.updateBooking(bookingId, updates);
+  const updated = await db.updateBooking(bookingId, updates);
   if (!updated) return null;
   
   // Create notifications
@@ -161,7 +161,7 @@ export function updateBookingStatus(
     in_progress: 'booking_confirmed',
   };
   
-  db.createNotification({
+  await db.createNotification({
     userId: booking.userId,
     type: notificationType[status] as any,
     title: `Booking ${status.replace('_', ' ')}`,
