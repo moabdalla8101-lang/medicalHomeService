@@ -1,0 +1,3 @@
+DATABASE_URL=postgresql://postgres.izvmzpbtfmvnazyejatv:asadsf543v%3A@aws-1-eu-west-1.pooler.supabase.com:5432/postgres?sslmode=require
+JWT_SECRET=61BNh0iSKmE2omCTecpcmlNjAPLDW32HbIeLiqY7xa4=
+NODE_ENV=production

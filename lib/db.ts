@@ -397,9 +397,7 @@ export const db = {
         cancellationReason: booking.cancellationReason,
         eta: booking.eta,
         assignedAt: booking.assignedAt,
-        service: {
-          connect: { id: booking.serviceId },
-        },
+        serviceId: booking.serviceId,
       },
       include: {
         service: true,
