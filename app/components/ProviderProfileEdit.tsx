@@ -1,12 +1,19 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Save, Upload, X, Image as ImageIcon } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 interface ProviderProfileEditProps {
   profile: any;
   onUpdate: () => void;
+}
+
+interface MedicalCentre {
+  id: string;
+  name: string;
+  address?: string;
+  phone?: string;
 }
 
 export default function ProviderProfileEdit({ profile, onUpdate }: ProviderProfileEditProps) {
@@ -16,11 +23,34 @@ export default function ProviderProfileEdit({ profile, onUpdate }: ProviderProfi
     experience: profile?.experience || 0,
     specialty: profile?.specialty || '',
     emergencyAvailable: profile?.emergencyAvailable || false,
+    medicalCentreId: profile?.medicalCentreId || '',
   });
+  const [medicalCentres, setMedicalCentres] = useState<MedicalCentre[]>([]);
+  const [loadingCentres, setLoadingCentres] = useState(false);
   const [profilePhoto, setProfilePhoto] = useState(profile?.profilePhoto || '');
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    // Fetch medical centres
+    fetchMedicalCentres();
+  }, []);
+
+  const fetchMedicalCentres = async () => {
+    setLoadingCentres(true);
+    try {
+      const response = await fetch('/api/medical-centres?status=active');
+      if (response.ok) {
+        const data = await response.json();
+        setMedicalCentres(data.data || []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch medical centres:', error);
+    } finally {
+      setLoadingCentres(false);
+    }
+  };
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -84,7 +114,10 @@ export default function ProviderProfileEdit({ profile, onUpdate }: ProviderProfi
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          medicalCentreId: formData.medicalCentreId || null,
+        }),
       });
 
       if (response.ok) {
@@ -201,6 +234,28 @@ export default function ProviderProfileEdit({ profile, onUpdate }: ProviderProfi
           min="0"
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
         />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Medical Centre (Optional)
+        </label>
+        <select
+          value={formData.medicalCentreId}
+          onChange={(e) => setFormData({ ...formData, medicalCentreId: e.target.value })}
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+          disabled={loadingCentres}
+        >
+          <option value="">No Medical Centre</option>
+          {medicalCentres.map((centre) => (
+            <option key={centre.id} value={centre.id}>
+              {centre.name} {centre.address ? `- ${centre.address}` : ''}
+            </option>
+          ))}
+        </select>
+        {loadingCentres && (
+          <p className="text-xs text-gray-500 mt-1">Loading medical centres...</p>
+        )}
       </div>
 
       <div>

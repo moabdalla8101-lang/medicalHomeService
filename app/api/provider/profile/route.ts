@@ -14,6 +14,7 @@ const updateProfileSchema = z.object({
   emergencyAvailable: z.boolean().optional(),
   profilePhoto: z.string().optional(),
   availability: z.array(z.any()).optional(),
+  medicalCentreId: z.string().nullable().optional(),
 });
 
 export async function GET(request: NextRequest) {
@@ -53,6 +54,8 @@ export async function GET(request: NextRequest) {
         rating: profile.rating,
         totalReviews: profile.totalReviews,
         services: profile.services,
+        medicalCentreId: profile.medicalCentreId,
+        medicalCentre: profile.medicalCentre,
       },
     });
   } catch (error) {
@@ -106,6 +109,7 @@ export async function PATCH(request: NextRequest) {
         profilePhoto: updates.profilePhoto,
         gallery: [],
         emergencyAvailable: updates.emergencyAvailable || false,
+        medicalCentreId: updates.medicalCentreId || undefined,
         status: 'pending', // New profiles need admin approval
         services: [],
         availability: updates.availability || [],

@@ -51,6 +51,7 @@ export async function GET(
         services: provider.services,
         availability,
         reviews: reviews.slice(0, 10), // Latest 10 reviews
+        medicalCentre: provider.medicalCentre,
       },
     });
   } catch (error) {

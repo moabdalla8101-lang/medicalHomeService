@@ -40,6 +40,12 @@ interface ProviderProfileProps {
       comment?: string;
       createdAt: Date;
     }>;
+    medicalCentre?: {
+      id: string;
+      name: string;
+      address?: string;
+      phone?: string;
+    };
   };
 }
 
@@ -155,7 +161,22 @@ export default function ProviderProfile({ provider }: ProviderProfileProps) {
             {/* Info */}
             <div className="flex-1">
               <h1 className="text-3xl font-bold text-gray-900 mb-2">{provider.name}</h1>
-              <p className="text-lg text-gray-600 mb-4">{provider.specialty}</p>
+              <p className="text-lg text-gray-600 mb-2">{provider.specialty}</p>
+              
+              {/* Medical Centre */}
+              {provider.medicalCentre && (
+                <div className="flex items-center gap-2 text-gray-600 mb-4">
+                  <MapPin className="w-5 h-5" />
+                  <div>
+                    <span className="font-medium">{provider.medicalCentre.name}</span>
+                    {provider.medicalCentre.address && (
+                      <span className="text-sm text-gray-500 ml-2">
+                        - {provider.medicalCentre.address}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )}
               
               {/* Rating */}
               <div className="flex items-center gap-2 mb-4">

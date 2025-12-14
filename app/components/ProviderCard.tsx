@@ -62,6 +62,13 @@ export default function ProviderCard({ provider, onClick }: ProviderCardProps) {
         </h3>
         <p className="text-sm text-gray-600 mb-2">{provider.specialty}</p>
         
+        {/* Medical Centre */}
+        {(provider as any).medicalCentre && (
+          <p className="text-xs text-gray-500 mb-2">
+            {(provider as any).medicalCentre.name}
+          </p>
+        )}
+        
         {/* Rating */}
         <div className="flex items-center gap-1 mb-2">
           <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />

@@ -4,7 +4,7 @@
 
 // @ts-ignore - PrismaClient will be available after running 'npx prisma generate'
 import { PrismaClient } from '@prisma/client';
-import { User, ProviderProfile, Booking, Review, Payment, SystemConfig, Notification, Service, AvailabilitySlot } from './types';
+import { User, ProviderProfile, Booking, Review, Payment, SystemConfig, Notification, Service, AvailabilitySlot, MedicalCentre } from './types';
 
 // Prisma Client singleton
 const globalForPrisma = globalThis as unknown as {
@@ -47,6 +47,18 @@ function prismaProviderToProvider(provider: any): ProviderProfile {
     civilId: provider.civilId || undefined,
     medicalLicense: provider.medicalLicense || undefined,
     iban: provider.iban || undefined,
+    medicalCentreId: provider.medicalCentreId || undefined,
+    medicalCentre: provider.medicalCentre ? {
+      id: provider.medicalCentre.id,
+      name: provider.medicalCentre.name,
+      address: provider.medicalCentre.address || undefined,
+      phone: provider.medicalCentre.phone || undefined,
+      email: provider.medicalCentre.email || undefined,
+      license: provider.medicalCentre.license || undefined,
+      status: provider.medicalCentre.status as any,
+      createdAt: provider.medicalCentre.createdAt,
+      updatedAt: provider.medicalCentre.updatedAt,
+    } : undefined,
     status: provider.status as any,
     rejectionReason: provider.rejectionReason || undefined,
     emergencyAvailable: provider.emergencyAvailable,
@@ -246,6 +258,7 @@ export const db = {
         civilId: profile.civilId,
         medicalLicense: profile.medicalLicense,
         iban: profile.iban,
+        medicalCentreId: profile.medicalCentreId,
         status: profile.status,
         rejectionReason: profile.rejectionReason,
         emergencyAvailable: profile.emergencyAvailable,
@@ -273,6 +286,7 @@ export const db = {
       include: {
         services: true,
         availability: true,
+        medicalCentre: true,
       },
     });
     return prismaProviderToProvider(created);
@@ -284,6 +298,7 @@ export const db = {
       include: {
         services: true,
         availability: true,
+        medicalCentre: true,
       },
     });
     return provider ? prismaProviderToProvider(provider) : undefined;
@@ -295,6 +310,7 @@ export const db = {
       include: {
         services: true,
         availability: true,
+        medicalCentre: true,
       },
     });
     return provider ? prismaProviderToProvider(provider) : undefined;
@@ -322,6 +338,7 @@ export const db = {
       include: {
         services: true,
         availability: true,
+        medicalCentre: true,
       },
     });
     
@@ -340,6 +357,7 @@ export const db = {
         civilId: updates.civilId,
         medicalLicense: updates.medicalLicense,
         iban: updates.iban,
+        medicalCentreId: updates.medicalCentreId,
         status: updates.status,
         rejectionReason: updates.rejectionReason,
         emergencyAvailable: updates.emergencyAvailable,
@@ -381,6 +399,7 @@ export const db = {
         include: {
           services: true,
           availability: true,
+          medicalCentre: true,
         },
       });
       
@@ -864,6 +883,115 @@ export const db = {
       duration: created.duration,
       category: created.category as any,
     };
+  },
+
+  // Medical Centres
+  createMedicalCentre: async (centre: Omit<MedicalCentre, 'id' | 'createdAt' | 'updatedAt'>): Promise<MedicalCentre> => {
+    const created = await prisma.medicalCentre.create({
+      data: {
+        name: centre.name,
+        address: centre.address,
+        phone: centre.phone,
+        email: centre.email,
+        license: centre.license,
+        status: centre.status,
+      },
+    });
+    return {
+      id: created.id,
+      name: created.name,
+      address: created.address || undefined,
+      phone: created.phone || undefined,
+      email: created.email || undefined,
+      license: created.license || undefined,
+      status: created.status as any,
+      createdAt: created.createdAt,
+      updatedAt: created.updatedAt,
+    };
+  },
+
+  getMedicalCentre: async (id: string): Promise<MedicalCentre | undefined> => {
+    const centre = await prisma.medicalCentre.findUnique({
+      where: { id },
+    });
+    if (!centre) return undefined;
+    return {
+      id: centre.id,
+      name: centre.name,
+      address: centre.address || undefined,
+      phone: centre.phone || undefined,
+      email: centre.email || undefined,
+      license: centre.license || undefined,
+      status: centre.status as any,
+      createdAt: centre.createdAt,
+      updatedAt: centre.updatedAt,
+    };
+  },
+
+  getAllMedicalCentres: async (filters?: { status?: MedicalCentre['status'] }): Promise<MedicalCentre[]> => {
+    const where: any = {};
+    if (filters?.status) {
+      where.status = filters.status;
+    }
+    const centres = await prisma.medicalCentre.findMany({
+      where,
+      orderBy: { name: 'asc' },
+    });
+    return centres.map(c => ({
+      id: c.id,
+      name: c.name,
+      address: c.address || undefined,
+      phone: c.phone || undefined,
+      email: c.email || undefined,
+      license: c.license || undefined,
+      status: c.status as any,
+      createdAt: c.createdAt,
+      updatedAt: c.updatedAt,
+    }));
+  },
+
+  updateMedicalCentre: async (id: string, updates: Partial<MedicalCentre>): Promise<MedicalCentre | null> => {
+    try {
+      const updateData: any = {
+        name: updates.name,
+        address: updates.address,
+        phone: updates.phone,
+        email: updates.email,
+        license: updates.license,
+        status: updates.status,
+      };
+      Object.keys(updateData).forEach(key => {
+        if (updateData[key] === undefined) {
+          delete updateData[key];
+        }
+      });
+      const updated = await prisma.medicalCentre.update({
+        where: { id },
+        data: updateData,
+      });
+      return {
+        id: updated.id,
+        name: updated.name,
+        address: updated.address || undefined,
+        phone: updated.phone || undefined,
+        email: updated.email || undefined,
+        license: updated.license || undefined,
+        status: updated.status as any,
+        createdAt: updated.createdAt,
+        updatedAt: updated.updatedAt,
+      };
+    } catch {
+      return null;
+    }
+  },
+
+  deleteMedicalCentre: async (id: string): Promise<boolean> => {
+    try {
+      await prisma.medicalCentre.delete({ where: { id } });
+      return true;
+    } catch {
+      return false;
+    }
   },
 };
 

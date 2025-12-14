@@ -17,6 +17,18 @@ export interface User {
   sessionExpiry?: Date;
 }
 
+export interface MedicalCentre {
+  id: string;
+  name: string;
+  address?: string;
+  phone?: string;
+  email?: string;
+  license?: string;
+  status: 'active' | 'inactive' | 'suspended';
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface ProviderProfile {
   id: string;
   userId: string;
@@ -31,6 +43,9 @@ export interface ProviderProfile {
   medicalLicense?: string;
   // Financial
   iban?: string;
+  // Medical Centre
+  medicalCentreId?: string;
+  medicalCentre?: MedicalCentre;
   // Status
   status: 'pending' | 'approved' | 'rejected' | 'suspended';
   rejectionReason?: string;

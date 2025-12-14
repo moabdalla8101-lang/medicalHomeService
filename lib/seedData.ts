@@ -1,4 +1,4 @@
-import { ProviderProfile, Service, AvailabilitySlot, ServiceType } from './types';
+import { ProviderProfile, Service, AvailabilitySlot, ServiceType, MedicalCentre } from './types';
 
 // Generate availability slots for the next 7 days
 function generateAvailabilitySlots(providerId: string): AvailabilitySlot[] {
@@ -53,6 +53,43 @@ export async function seedDummyProviders(forceUpdate: boolean = false) {
     }
     console.log(`[SEED] Updated ${existingProviders.length} providers with availability slots`);
     return existingProviders.length;
+  }
+
+  console.log('[SEED] Creating dummy medical centres...');
+  
+  // Create medical centres first
+  const medicalCentres = [
+    {
+      name: 'Al-Sabah Medical Centre',
+      address: 'Salmiya, Block 10, Street 5',
+      phone: '+96522345678',
+      email: 'info@alsabahmedical.kw',
+      license: 'MC-2024-001',
+      status: 'active' as const,
+    },
+    {
+      name: 'Kuwait City Health Clinic',
+      address: 'Kuwait City, Al-Sharq District',
+      phone: '+96522345679',
+      email: 'contact@kuwaitcityhealth.kw',
+      license: 'MC-2024-002',
+      status: 'active' as const,
+    },
+    {
+      name: 'Home Care Medical Services',
+      address: 'Hawalli, Block 2, Street 8',
+      phone: '+96522345680',
+      email: 'support@homecaremedical.kw',
+      license: 'MC-2024-003',
+      status: 'active' as const,
+    },
+  ];
+
+  const createdCentres: MedicalCentre[] = [];
+  for (const centreData of medicalCentres) {
+    const centre = await db.createMedicalCentre(centreData);
+    createdCentres.push(centre);
+    console.log(`[SEED] Created medical centre: ${centre.name}`);
   }
 
   console.log('[SEED] Creating dummy providers...');

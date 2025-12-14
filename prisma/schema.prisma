@@ -31,6 +31,22 @@ model User {
   @@index([role])
 }
 
+model MedicalCentre {
+  id          String   @id @default(uuid())
+  name        String
+  address     String?
+  phone       String?
+  email       String?
+  license     String?  // Medical centre license number
+  status      String   @default("active") // 'active' | 'inactive' | 'suspended'
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  providers   ProviderProfile[]
+
+  @@index([status])
+}
+
 model ProviderProfile {
   id                 String   @id @default(uuid())
   userId             String   @unique
@@ -43,6 +59,7 @@ model ProviderProfile {
   civilId            String?
   medicalLicense     String?
   iban               String?
+  medicalCentreId    String?  // Optional - provider can belong to a medical centre
   status             String   @default("pending") // 'pending' | 'approved' | 'rejected' | 'suspended'
   rejectionReason    String?
   emergencyAvailable Boolean  @default(false)
@@ -52,15 +69,17 @@ model ProviderProfile {
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 
-  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  services    Service[]
+  user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  medicalCentre MedicalCentre? @relation(fields: [medicalCentreId], references: [id], onDelete: SetNull)
+  services     Service[]
   availability AvailabilitySlot[]
-  bookings    Booking[]
-  reviews     Review[]
+  bookings     Booking[]
+  reviews      Review[]
 
   @@index([status])
   @@index([specialty])
   @@index([emergencyAvailable])
+  @@index([medicalCentreId])
 }
 
 model Service {
