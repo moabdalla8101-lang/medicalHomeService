@@ -117,7 +117,12 @@ export async function PATCH(request: NextRequest) {
       });
     } else {
       // Update existing profile
-      const updated = await db.updateProviderProfile(profile.id, updates);
+      // Convert null to undefined for medicalCentreId
+      const updateData = {
+        ...updates,
+        medicalCentreId: updates.medicalCentreId === null ? undefined : updates.medicalCentreId,
+      };
+      const updated = await db.updateProviderProfile(profile.id, updateData);
       
       if (!updated) {
         return NextResponse.json(
