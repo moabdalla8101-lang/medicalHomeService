@@ -27,12 +27,17 @@ export async function POST(request: NextRequest) {
     // Verify seeding
     const providers = await db.getAllProviders();
     
+    // Get medical centres count for response
+    const { db: dbCheck } = await import('@/lib/db');
+    const medicalCentres = await dbCheck.getAllMedicalCentres();
+    
     return NextResponse.json({
       success: true,
       message: forceUpdate 
-        ? `Updated ${count} providers with availability slots` 
+        ? `Updated ${count} providers with availability slots and medical centres` 
         : 'Dummy data seeded successfully',
       providersCount: providers.length,
+      medicalCentresCount: medicalCentres.length,
     });
   } catch (error) {
     console.error('Error seeding dummy data:', error);
