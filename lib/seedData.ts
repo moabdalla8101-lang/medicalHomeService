@@ -41,17 +41,67 @@ export async function seedDummyProviders(forceUpdate: boolean = false) {
     return existingProviders.length;
   }
   
-  // If forceUpdate is true, update existing providers with availability slots
+  // If forceUpdate is true, create medical centres and assign providers
   if (existingProviders.length > 0 && forceUpdate) {
-    console.log('[SEED] Updating existing providers with availability slots...');
-    for (const provider of existingProviders) {
+    console.log('[SEED] Force update: Creating medical centres and updating providers...');
+    
+    // Check if medical centres exist, create if not
+    const existingCentres = await db.getAllMedicalCentres();
+    let createdCentres: MedicalCentre[] = [];
+    
+    if (existingCentres.length === 0) {
+      console.log('[SEED] Creating dummy medical centres...');
+      const medicalCentres = [
+        {
+          name: 'Al-Sabah Medical Centre',
+          address: 'Salmiya, Block 10, Street 5',
+          phone: '+96522345678',
+          email: 'info@alsabahmedical.kw',
+          license: 'MC-2024-001',
+          status: 'active' as const,
+        },
+        {
+          name: 'Kuwait City Health Clinic',
+          address: 'Kuwait City, Al-Sharq District',
+          phone: '+96522345679',
+          email: 'contact@kuwaitcityhealth.kw',
+          license: 'MC-2024-002',
+          status: 'active' as const,
+        },
+        {
+          name: 'Home Care Medical Services',
+          address: 'Hawalli, Block 2, Street 8',
+          phone: '+96522345680',
+          email: 'support@homecaremedical.kw',
+          license: 'MC-2024-003',
+          status: 'active' as const,
+        },
+      ];
+
+      for (const centreData of medicalCentres) {
+        const centre = await db.createMedicalCentre(centreData);
+        createdCentres.push(centre);
+        console.log(`[SEED] Created medical centre: ${centre.name}`);
+      }
+    } else {
+      createdCentres = existingCentres;
+      console.log(`[SEED] Using existing ${existingCentres.length} medical centres`);
+    }
+    
+    // Update providers with availability slots and assign to medical centres
+    console.log('[SEED] Updating providers with availability slots and medical centres...');
+    for (let i = 0; i < existingProviders.length; i++) {
+      const provider = existingProviders[i];
       const availability = generateAvailabilitySlots(provider.id);
+      const medicalCentreId = createdCentres[i % createdCentres.length]?.id;
+      
       await db.updateProviderProfile(provider.id, {
         availability,
+        medicalCentreId: medicalCentreId,
       });
-      console.log(`[SEED] Updated availability slots for: ${provider.name}`);
+      console.log(`[SEED] Updated ${provider.name} with availability slots and medical centre`);
     }
-    console.log(`[SEED] Updated ${existingProviders.length} providers with availability slots`);
+    console.log(`[SEED] Updated ${existingProviders.length} providers with availability slots and medical centres`);
     return existingProviders.length;
   }
 
