@@ -398,53 +398,63 @@ export const db = {
         eta: booking.eta,
         assignedAt: booking.assignedAt,
       },
-      include: {
-        service: true,
-      },
     });
-    return prismaBookingToBooking(created);
+    // Fetch service separately
+    const service = await prisma.service.findUnique({ where: { id: booking.serviceId } });
+    if (!service) {
+      throw new Error(`Service not found: ${booking.serviceId}`);
+    }
+    return prismaBookingToBooking({ ...created, service });
   },
 
   getBooking: async (id: string): Promise<Booking | undefined> => {
     const booking = await prisma.booking.findUnique({
       where: { id },
-      include: {
-        service: true,
-      },
     });
-    return booking ? prismaBookingToBooking(booking) : undefined;
+    if (!booking) return undefined;
+    const service = await prisma.service.findUnique({ where: { id: booking.serviceId } });
+    if (!service) {
+      throw new Error(`Service not found: ${booking.serviceId}`);
+    }
+    return prismaBookingToBooking({ ...booking, service });
   },
 
   getUserBookings: async (userId: string): Promise<Booking[]> => {
     const bookings = await prisma.booking.findMany({
       where: { userId },
-      include: {
-        service: true,
-      },
       orderBy: { createdAt: 'desc' },
     });
-    return bookings.map(prismaBookingToBooking);
+    // Fetch services for all bookings
+    const bookingsWithServices = await Promise.all(bookings.map(async (booking) => {
+      const service = await prisma.service.findUnique({ where: { id: booking.serviceId } });
+      return { ...booking, service: service || {} as any };
+    }));
+    return bookingsWithServices.map(prismaBookingToBooking);
   },
 
   getProviderBookings: async (providerId: string): Promise<Booking[]> => {
     const bookings = await prisma.booking.findMany({
       where: { providerId },
-      include: {
-        service: true,
-      },
       orderBy: { createdAt: 'desc' },
     });
-    return bookings.map(prismaBookingToBooking);
+    // Fetch services for all bookings
+    const bookingsWithServices = await Promise.all(bookings.map(async (booking) => {
+      const service = await prisma.service.findUnique({ where: { id: booking.serviceId } });
+      return { ...booking, service: service || {} as any };
+    }));
+    return bookingsWithServices.map(prismaBookingToBooking);
   },
 
   getAllBookings: async (): Promise<Booking[]> => {
     const bookings = await prisma.booking.findMany({
-      include: {
-        service: true,
-      },
       orderBy: { createdAt: 'desc' },
     });
-    return bookings.map(prismaBookingToBooking);
+    // Fetch services for all bookings
+    const bookingsWithServices = await Promise.all(bookings.map(async (booking) => {
+      const service = await prisma.service.findUnique({ where: { id: booking.serviceId } });
+      return { ...booking, service: service || {} as any };
+    }));
+    return bookingsWithServices.map(prismaBookingToBooking);
   },
 
   updateBooking: async (id: string, updates: Partial<Booking>): Promise<Booking | null> => {
@@ -483,11 +493,13 @@ export const db = {
       const updated = await prisma.booking.update({
         where: { id },
         data: updateData,
-        include: {
-          service: true,
-        },
       });
-      return prismaBookingToBooking(updated);
+      // Fetch service separately
+      const service = await prisma.service.findUnique({ where: { id: updated.serviceId } });
+      if (!service) {
+        throw new Error(`Service not found: ${updated.serviceId}`);
+      }
+      return prismaBookingToBooking({ ...updated, service });
     } catch {
       return null;
     }
