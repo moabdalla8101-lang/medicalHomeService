@@ -42,8 +42,6 @@ export default function PhoneAuth({ onSuccess, onAuthSuccess, role = 'user' }: P
         throw new Error(data.error || 'Failed to send OTP');
       }
 
-      toast.success('OTP sent successfully!');
-      setStep('otp');
       // Store normalized phone for verification (always available from API)
       setNormalizedPhone(data.normalizedPhone || phone);
       
@@ -51,8 +49,29 @@ export default function PhoneAuth({ onSuccess, onAuthSuccess, role = 'user' }: P
       if (data.otp) {
         console.log('OTP:', data.otp);
         console.log('Normalized phone:', data.normalizedPhone || phone);
-        toast.success(`Your OTP: ${data.otp}`, { duration: 15000 });
+        // Show OTP toast with longer duration, then show success message
+        toast.success(`${t('auth.yourOTP') || 'Your OTP'}: ${data.otp}`, { 
+          duration: 20000,
+          position: isRTL ? 'top-left' : 'top-center',
+          style: {
+            fontSize: '16px',
+            fontWeight: 'bold',
+          }
+        });
+        // Also show a brief success message
+        setTimeout(() => {
+          toast.success(t('auth.otpSent'), { 
+            duration: 3000,
+            position: isRTL ? 'top-left' : 'top-center',
+          });
+        }, 500);
+      } else {
+        toast.success(t('auth.otpSent'), { 
+          duration: 3000,
+          position: isRTL ? 'top-left' : 'top-center',
+        });
       }
+      setStep('otp');
     } catch (error: any) {
       toast.error(error.message || 'Failed to send OTP');
     } finally {

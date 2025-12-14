@@ -101,7 +101,8 @@
     "otpSentMessage": "سنرسل لك رمز التحقق",
     "enterOTPMessage": "أدخل الرمز المكون من 6 أرقام المرسل إلى هاتفك",
     "changePhoneNumber": "تغيير رقم الهاتف",
-    "verifyPhoneToBook": "يرجى التحقق من رقم هاتفك لحجز موعد"
+    "verifyPhoneToBook": "يرجى التحقق من رقم هاتفك لحجز موعد",
+    "yourOTP": "رمز التحقق الخاص بك"
   },
   "language": {
     "switch": "تغيير اللغة",

@@ -152,8 +152,8 @@ export default function ProviderProfile({ provider }: ProviderProfileProps) {
             <LanguageSwitcher />
           </div>
           
-          <div className={`flex items-start gap-6 ${isRTL ? 'flex-row-reverse' : ''}`}>
-            {/* Profile Photo */}
+          <div className={`flex items-start gap-6 ${isRTL ? 'flex-row-reverse' : ''}`} dir={isRTL ? 'rtl' : 'ltr'}>
+            {/* Profile Photo - will be on right in RTL, left in LTR */}
             <div className="relative w-24 h-24 sm:w-32 sm:h-32 rounded-full overflow-hidden bg-gradient-to-br from-blue-100 to-indigo-100 flex-shrink-0">
               {provider.profilePhoto ? (
                 <img
@@ -168,7 +168,7 @@ export default function ProviderProfile({ provider }: ProviderProfileProps) {
               )}
             </div>
 
-            {/* Info */}
+            {/* Info - will be on left in RTL, right in LTR, but content right-aligned in RTL */}
             <div className={`flex-1 ${isRTL ? 'text-right' : 'text-left'}`} dir={isRTL ? 'rtl' : 'ltr'}>
               <h1 className={`text-2xl sm:text-3xl font-bold text-gray-900 mb-2 ${isRTL ? 'text-right' : 'text-left'}`}>{provider.name}</h1>
               <p className={`text-base sm:text-lg text-gray-600 mb-2 ${isRTL ? 'text-right' : 'text-left'}`}>{provider.specialty}</p>
