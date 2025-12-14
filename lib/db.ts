@@ -27,6 +27,18 @@ function prismaUserToUser(user: any): User {
     role: user.role as any,
     name: user.name || undefined,
     address: user.address || undefined,
+    medicalCentreId: user.medicalCentreId || undefined,
+    medicalCentre: user.medicalCentre ? {
+      id: user.medicalCentre.id,
+      name: user.medicalCentre.name,
+      address: user.medicalCentre.address || undefined,
+      phone: user.medicalCentre.phone || undefined,
+      email: user.medicalCentre.email || undefined,
+      license: user.medicalCentre.license || undefined,
+      status: user.medicalCentre.status as any,
+      createdAt: user.medicalCentre.createdAt,
+      updatedAt: user.medicalCentre.updatedAt,
+    } : undefined,
     sessionToken: user.sessionToken || undefined,
     sessionExpiry: user.sessionExpiry || undefined,
     createdAt: user.createdAt,
@@ -208,20 +220,34 @@ export const db = {
         role: user.role,
         name: user.name,
         address: user.address,
+        medicalCentreId: user.medicalCentreId,
         sessionToken: user.sessionToken,
         sessionExpiry: user.sessionExpiry,
+      },
+      include: {
+        medicalCentre: true,
       },
     });
     return prismaUserToUser(created);
   },
 
   getUserById: async (id: string): Promise<User | undefined> => {
-    const user = await prisma.user.findUnique({ where: { id } });
+    const user = await prisma.user.findUnique({ 
+      where: { id },
+      include: {
+        medicalCentre: true,
+      },
+    });
     return user ? prismaUserToUser(user) : undefined;
   },
 
   getUserByPhone: async (phone: string): Promise<User | undefined> => {
-    const user = await prisma.user.findUnique({ where: { phone } });
+    const user = await prisma.user.findUnique({ 
+      where: { phone },
+      include: {
+        medicalCentre: true,
+      },
+    });
     return user ? prismaUserToUser(user) : undefined;
   },
 
@@ -234,8 +260,12 @@ export const db = {
           role: updates.role,
           name: updates.name,
           address: updates.address,
+          medicalCentreId: updates.medicalCentreId,
           sessionToken: updates.sessionToken,
           sessionExpiry: updates.sessionExpiry,
+        },
+        include: {
+          medicalCentre: true,
         },
       });
       return prismaUserToUser(updated);

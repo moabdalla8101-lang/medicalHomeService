@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 
 const sendOTPSchema = z.object({
   phone: z.string().min(1, 'Phone number is required'),
-  role: z.enum(['user', 'provider', 'admin']).optional(),
+  role: z.enum(['user', 'provider', 'admin', 'medical_centre']).optional(),
 });
 
 export async function POST(request: NextRequest) {

@@ -13,14 +13,16 @@ datasource db {
 model User {
   id            String    @id @default(uuid())
   phone         String    @unique
-  role          String    // 'user' | 'provider' | 'admin'
+  role          String    // 'user' | 'provider' | 'admin' | 'medical_centre'
   name          String?
   address       String?
+  medicalCentreId String?  // For medical centre admin users
   sessionToken  String?
   sessionExpiry DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
+  medicalCentre MedicalCentre? @relation("MedicalCentreAdmins", fields: [medicalCentreId], references: [id], onDelete: SetNull)
   providerProfile ProviderProfile?
   bookings        Booking[]
   reviews         Review[]
@@ -29,6 +31,7 @@ model User {
 
   @@index([phone])
   @@index([role])
+  @@index([medicalCentreId])
 }
 
 model MedicalCentre {
@@ -42,6 +45,7 @@ model MedicalCentre {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  admins      User[]   @relation("MedicalCentreAdmins")
   providers   ProviderProfile[]
 
   @@index([status])

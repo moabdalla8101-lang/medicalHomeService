@@ -5,11 +5,13 @@ import { Phone, Loader2, CheckCircle2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 interface PhoneAuthProps {
-  onSuccess: (token: string, user: any) => void;
-  role?: 'user' | 'provider' | 'admin';
+  onSuccess?: (token: string, user: any) => void;
+  onAuthSuccess?: (token: string, user: any) => void;
+  role?: 'user' | 'provider' | 'admin' | 'medical_centre';
 }
 
-export default function PhoneAuth({ onSuccess, role = 'user' }: PhoneAuthProps) {
+export default function PhoneAuth({ onSuccess, onAuthSuccess, role = 'user' }: PhoneAuthProps) {
+  const handleSuccess = onAuthSuccess || onSuccess;
   const [phone, setPhone] = useState('');
   const [normalizedPhone, setNormalizedPhone] = useState('');
   const [otp, setOtp] = useState('');
@@ -96,7 +98,9 @@ export default function PhoneAuth({ onSuccess, role = 'user' }: PhoneAuthProps) 
       }
 
       toast.success('Login successful!');
-      onSuccess(data.token, data.user);
+      if (handleSuccess) {
+        handleSuccess(data.token, data.user);
+      }
     } catch (error: any) {
       toast.error(error.message || 'Invalid OTP');
     } finally {

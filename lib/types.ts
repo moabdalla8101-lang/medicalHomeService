@@ -1,5 +1,5 @@
 // Core User Types
-export type UserRole = 'user' | 'provider' | 'admin';
+export type UserRole = 'user' | 'provider' | 'admin' | 'medical_centre';
 
 export interface User {
   id: string;
@@ -10,6 +10,9 @@ export interface User {
   // User-specific fields
   name?: string;
   address?: string;
+  // Medical Centre Admin
+  medicalCentreId?: string;
+  medicalCentre?: MedicalCentre;
   // Provider-specific fields
   providerProfile?: ProviderProfile;
   // Session
