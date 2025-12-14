@@ -343,7 +343,7 @@ export default function ProviderProfile({ provider }: ProviderProfileProps) {
         {/* Gallery */}
         {provider.gallery && provider.gallery.length > 0 && (
           <div className="bg-white rounded-xl shadow-sm p-6">
-            <h2 className="text-xl font-bold mb-4">Gallery</h2>
+            <h2 className={`text-xl font-bold mb-4 ${isRTL ? 'text-right' : 'text-left'}`}>{t('provider.gallery')}</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {provider.gallery.map((photo, index) => (
                 <div
@@ -352,7 +352,7 @@ export default function ProviderProfile({ provider }: ProviderProfileProps) {
                 >
                   <img
                     src={photo}
-                    alt={`Gallery ${index + 1}`}
+                    alt={`${t('provider.gallery')} ${index + 1}`}
                     className="w-full h-full object-cover"
                   />
                 </div>
