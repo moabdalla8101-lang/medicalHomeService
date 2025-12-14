@@ -440,6 +440,16 @@ export const db = {
     return bookings.map(prismaBookingToBooking);
   },
 
+  getAllBookings: async (): Promise<Booking[]> => {
+    const bookings = await prisma.booking.findMany({
+      include: {
+        service: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+    return bookings.map(prismaBookingToBooking);
+  },
+
   updateBooking: async (id: string, updates: Partial<Booking>): Promise<Booking | null> => {
     try {
       const updateData: any = {

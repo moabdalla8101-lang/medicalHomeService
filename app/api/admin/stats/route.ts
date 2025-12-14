@@ -73,14 +73,9 @@ export async function GET(request: NextRequest) {
     const allProviders = await db.getAllProviders();
     const pendingProviders = allProviders.filter(p => p.status === 'pending');
     
-    // Get all bookings - we need to query them from the database
-    // For now, we'll get them through a different approach
-    // Note: This is a simplified version - you may want to add a getAllBookings method to db
+    // Get all bookings
+    const allBookings = await db.getAllBookings();
     const today = new Date().toISOString().split('T')[0];
-    
-    // Since we don't have getAllBookings, we'll calculate stats differently
-    // This is a placeholder - you should add proper methods to db.ts
-    const allBookings: any[] = []; // TODO: Add db.getAllBookings() method
     const todayBookings = allBookings.filter((b: any) => 
       b.scheduledDate === today || (b.type === 'emergency' && new Date(b.createdAt).toISOString().split('T')[0] === today)
     );

@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 export async function POST(request: NextRequest) {
   try {
     // Check if providers already exist
-    const existingProviders = db.getAllProviders();
+    const existingProviders = await db.getAllProviders();
     
     if (existingProviders.length > 0) {
       return NextResponse.json({
@@ -19,10 +19,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Seed dummy providers
-    seedDummyProviders();
+    await seedDummyProviders();
 
     // Verify seeding
-    const providers = db.getAllProviders();
+    const providers = await db.getAllProviders();
     
     return NextResponse.json({
       success: true,
@@ -43,8 +43,10 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const providers = db.getAllProviders();
-    const users = Array.from((db as any).users?.values() || []);
+    const providers = await db.getAllProviders();
+    // For Prisma, we need to query users separately
+    const { prisma } = await import('@/lib/db');
+    const users = await prisma.user.findMany();
     
     return NextResponse.json({
       success: true,
