@@ -13,7 +13,7 @@ const updateRoleSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization');
-    const user = requireAuth(authHeader);
+    const user = await requireAuth(authHeader);
     
     const body = await request.json();
     const { role } = updateRoleSchema.parse(body);
@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
     // For now, we allow it for easier testing and demo purposes
     
     // Update user role
-    const updated = db.updateUser(user.id, { role });
+    const updated = await db.updateUser(user.id, { role });
     
     if (!updated) {
       return NextResponse.json(
@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
     // Update session
     const sessionExpiry = new Date();
     sessionExpiry.setDate(sessionExpiry.getDate() + 7);
-    db.updateUser(updated.id, {
+    await db.updateUser(updated.id, {
       sessionToken: newToken,
       sessionExpiry,
     });

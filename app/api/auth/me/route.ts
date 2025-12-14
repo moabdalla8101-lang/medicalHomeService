@@ -8,12 +8,12 @@ export const dynamic = 'force-dynamic';
 export async function GET(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization');
-    const user = requireAuth(authHeader);
+    const user = await requireAuth(authHeader);
     
     // Get provider profile if user is a provider
     let providerProfile = null;
     if (user.role === 'provider') {
-      providerProfile = db.getProviderProfileByUserId(user.id);
+      providerProfile = await db.getProviderProfileByUserId(user.id);
     }
     
     return NextResponse.json({

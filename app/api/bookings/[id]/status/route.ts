@@ -17,14 +17,14 @@ export async function PATCH(
 ) {
   try {
     const authHeader = request.headers.get('authorization');
-    const user = requireAuth(authHeader);
+    const user = await requireAuth(authHeader);
     
     const body = await request.json();
     const { status, cancellationReason } = updateStatusSchema.parse(body);
     
     // Check if user has permission to update this booking
     const { db } = await import('@/lib/db');
-    const booking = db.getBooking(params.id);
+    const booking = await db.getBooking(params.id);
     
     if (!booking) {
       return NextResponse.json(
@@ -42,7 +42,7 @@ export async function PATCH(
     }
     
     if (user.role === 'provider') {
-      const profile = db.getProviderProfileByUserId(user.id);
+      const profile = await db.getProviderProfileByUserId(user.id);
       if (!profile || booking.providerId !== profile.id) {
         return NextResponse.json(
           { error: 'Unauthorized' },
@@ -51,7 +51,7 @@ export async function PATCH(
       }
     }
     
-    const updated = updateBookingStatus(
+    const updated = await updateBookingStatus(
       params.id,
       status,
       user.role === 'admin' ? 'admin' : user.role === 'provider' ? 'provider' : 'user',

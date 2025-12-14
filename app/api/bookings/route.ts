@@ -22,7 +22,7 @@ const createBookingSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization');
-    const user = requireAuth(authHeader);
+    const user = await requireAuth(authHeader);
     
     if (user.role !== 'user') {
       return NextResponse.json(
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
       }
     }
     
-    const booking = createBooking({
+    const booking = await createBooking({
       userId: user.id,
       ...validated,
     });
@@ -86,23 +86,23 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization');
-    const user = requireAuth(authHeader);
+    const user = await requireAuth(authHeader);
     
     const { db } = await import('@/lib/db');
     
     let bookings: any[] = [];
     if (user.role === 'user') {
-      bookings = db.getUserBookings(user.id);
+      bookings = await db.getUserBookings(user.id);
     } else if (user.role === 'provider') {
       // For providers, we need to get their profile first
-      const profile = db.getProviderProfileByUserId(user.id);
+      const profile = await db.getProviderProfileByUserId(user.id);
       if (!profile) {
         return NextResponse.json({
           success: true,
           bookings: [],
         });
       }
-      bookings = db.getProviderBookings(profile.id);
+      bookings = await db.getProviderBookings(profile.id);
     } else {
       // Admin - return all bookings (or empty for now)
       bookings = [];
