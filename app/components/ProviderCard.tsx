@@ -69,19 +69,19 @@ export default function ProviderCard({ provider, onClick }: ProviderCardProps) {
         
         {/* Medical Centre */}
         {(provider as any).medicalCentre && (
-          <p className="text-xs text-gray-500 mb-2">
+          <p className={`text-xs text-gray-500 mb-2 ${isRTL ? 'text-right' : 'text-left'}`}>
             {(provider as any).medicalCentre.name}
           </p>
         )}
         
         {/* Rating */}
-        <div className="flex items-center gap-1 mb-2">
-          <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+        <div className={`flex items-center gap-1 mb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+          <Star className="w-4 h-4 fill-yellow-400 text-yellow-400 flex-shrink-0" />
           <span className="text-sm font-semibold text-gray-900">
             {provider.rating.toFixed(1)}
           </span>
           <span className="text-xs text-gray-500">
-            ({provider.totalReviews} reviews)
+            ({provider.totalReviews} {t('home.reviews')})
           </span>
         </div>
         
