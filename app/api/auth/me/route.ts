@@ -2,18 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/auth';
 import { db } from '@/lib/db';
 
-// Force dynamic rendering
-export const dynamic = 'force-dynamic';
-
 export async function GET(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization');
-    const user = await requireAuth(authHeader);
+    const user = requireAuth(authHeader);
     
     // Get provider profile if user is a provider
     let providerProfile = null;
     if (user.role === 'provider') {
-      providerProfile = await db.getProviderProfileByUserId(user.id);
+      providerProfile = db.getProviderProfileByUserId(user.id);
     }
     
     return NextResponse.json({

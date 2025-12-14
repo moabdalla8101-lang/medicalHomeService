@@ -30,14 +30,28 @@ function generateAvailabilitySlots(providerId: string): AvailabilitySlot[] {
   return slots;
 }
 
-export async function seedDummyProviders() {
+export async function seedDummyProviders(forceUpdate: boolean = false) {
   // Import db here to avoid circular dependency
   const { db } = await import('./db');
   
   // Check if providers already exist
   const existingProviders = await db.getAllProviders();
-  if (existingProviders.length > 0) {
+  if (existingProviders.length > 0 && !forceUpdate) {
     console.log('[SEED] Providers already exist, skipping seed');
+    return existingProviders.length;
+  }
+  
+  // If forceUpdate is true, update existing providers with availability slots
+  if (existingProviders.length > 0 && forceUpdate) {
+    console.log('[SEED] Updating existing providers with availability slots...');
+    for (const provider of existingProviders) {
+      const availability = generateAvailabilitySlots(provider.id);
+      await db.updateProviderProfile(provider.id, {
+        availability,
+      });
+      console.log(`[SEED] Updated availability slots for: ${provider.name}`);
+    }
+    console.log(`[SEED] Updated ${existingProviders.length} providers with availability slots`);
     return existingProviders.length;
   }
 
