@@ -234,7 +234,7 @@ export default function ProviderProfile({ provider }: ProviderProfileProps) {
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 py-6 space-y-6" dir={isRTL ? 'rtl' : 'ltr'}>
+      <div className={`max-w-4xl mx-auto px-4 py-6 space-y-6 ${isRTL ? 'text-right' : 'text-left'}`} dir={isRTL ? 'rtl' : 'ltr'}>
         {/* Bio */}
         {provider.bio && (
           <div className="bg-white rounded-xl shadow-sm p-6">
