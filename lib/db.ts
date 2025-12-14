@@ -346,6 +346,28 @@ export const db = {
         maxBookingsPerDay: updates.maxBookingsPerDay,
       };
       
+      // Handle availability slots if provided
+      if (updates.availability !== undefined) {
+        // Delete existing availability slots for this provider
+        await prisma.availabilitySlot.deleteMany({
+          where: { providerId: id },
+        });
+        
+        // Create new availability slots
+        if (updates.availability.length > 0) {
+          updateData.availability = {
+            create: updates.availability.map((slot: AvailabilitySlot) => ({
+              date: slot.date,
+              startTime: slot.startTime,
+              endTime: slot.endTime,
+              isAvailable: slot.isAvailable,
+              isBooked: slot.isBooked || false,
+              bookingId: slot.bookingId,
+            })),
+          };
+        }
+      }
+      
       // Remove undefined values
       Object.keys(updateData).forEach(key => {
         if (updateData[key] === undefined) {
@@ -363,7 +385,8 @@ export const db = {
       });
       
       return prismaProviderToProvider(updated);
-    } catch {
+    } catch (error) {
+      console.error('[DB] Error updating provider profile:', error);
       return null;
     }
   },
