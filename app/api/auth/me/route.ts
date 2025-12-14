@@ -21,6 +21,14 @@ export async function GET(request: NextRequest) {
         role: user.role,
         name: user.name,
         address: user.address,
+        medicalCentreId: user.medicalCentreId,
+        medicalCentre: user.medicalCentre ? {
+          id: user.medicalCentre.id,
+          name: user.medicalCentre.name,
+          address: user.medicalCentre.address,
+          phone: user.medicalCentre.phone,
+          email: user.medicalCentre.email,
+        } : null,
         providerProfile: providerProfile ? {
           id: providerProfile.id,
           name: providerProfile.name,
