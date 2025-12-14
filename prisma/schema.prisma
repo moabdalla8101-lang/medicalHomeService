@@ -1,0 +1,214 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(uuid())
+  phone         String    @unique
+  role          String    // 'user' | 'provider' | 'admin'
+  name          String?
+  address       String?
+  sessionToken  String?
+  sessionExpiry DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  providerProfile ProviderProfile?
+  bookings        Booking[]
+  reviews         Review[]
+  payments        Payment[]
+  notifications   Notification[]
+
+  @@index([phone])
+  @@index([role])
+}
+
+model ProviderProfile {
+  id                 String   @id @default(uuid())
+  userId             String   @unique
+  name               String
+  bio                String?
+  experience         Int?
+  specialty          String
+  profilePhoto       String?
+  gallery            String[] @default([])
+  civilId            String?
+  medicalLicense     String?
+  iban               String?
+  status             String   @default("pending") // 'pending' | 'approved' | 'rejected' | 'suspended'
+  rejectionReason    String?
+  emergencyAvailable Boolean  @default(false)
+  rating             Float    @default(0)
+  totalReviews       Int      @default(0)
+  maxBookingsPerDay  Int      @default(10)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  services    Service[]
+  availability AvailabilitySlot[]
+  bookings    Booking[]
+  reviews     Review[]
+
+  @@index([status])
+  @@index([specialty])
+  @@index([emergencyAvailable])
+}
+
+model Service {
+  id          String   @id @default(uuid())
+  providerId  String
+  name        String
+  description String?
+  price       Float
+  duration    Int      // minutes
+  category    String   // ServiceType enum
+
+  provider ProviderProfile @relation(fields: [providerId], references: [id], onDelete: Cascade)
+
+  @@index([providerId])
+  @@index([category])
+}
+
+model AvailabilitySlot {
+  id         String   @id @default(uuid())
+  providerId String
+  date       String   // YYYY-MM-DD
+  startTime  String   // HH:mm
+  endTime    String   // HH:mm
+  isAvailable Boolean  @default(true)
+  isBooked   Boolean  @default(false)
+  bookingId  String?
+
+  provider ProviderProfile @relation(fields: [providerId], references: [id], onDelete: Cascade)
+
+  @@index([providerId, date])
+  @@index([providerId, date, startTime])
+}
+
+model Booking {
+  id                  String   @id @default(uuid())
+  userId              String
+  providerId          String
+  serviceId           String
+  type                String   // 'standard' | 'emergency'
+  scheduledDate       String?   // YYYY-MM-DD
+  scheduledTime       String?   // HH:mm
+  slotId              String?
+  address             String
+  latitude            Float?
+  longitude           Float?
+  notes               String?
+  status              String   @default("requested") // BookingStatus enum
+  servicePrice        Float
+  emergencySurcharge  Float?
+  platformCommission  Float
+  totalPrice          Float
+  providerEarnings    Float
+  paymentStatus       String   @default("pending") // 'pending' | 'paid' | 'refunded'
+  paymentId           String?
+  paymentMethod       String?
+  completedAt         DateTime?
+  cancelledAt         DateTime?
+  cancellationReason  String?
+  eta                 Int?     // minutes (for emergency)
+  assignedAt          DateTime?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  user    User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  provider ProviderProfile @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  payment  Payment?
+  review   Review?
+
+  @@index([userId])
+  @@index([providerId])
+  @@index([status])
+  @@index([paymentStatus])
+  @@index([scheduledDate])
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  bookingId String   @unique
+  userId    String
+  providerId String
+  rating    Int      // 1-5
+  comment   String?
+  status    String   @default("pending") // 'pending' | 'approved' | 'rejected'
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  provider ProviderProfile @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  booking  Booking         @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@index([providerId])
+  @@index([status])
+}
+
+model Payment {
+  id                String   @id @default(uuid())
+  bookingId         String   @unique
+  userId            String
+  amount            Float
+  currency          String   @default("KWD")
+  status            String   @default("pending") // 'pending' | 'completed' | 'failed' | 'refunded'
+  paymentMethod     String   @default("knet")
+  knetTransactionId String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  type      String   // NotificationType enum
+  title     String
+  message   String
+  data      Json?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([read])
+  @@index([createdAt])
+}
+
+model SystemConfig {
+  id                        String   @id @default(uuid())
+  platformCommissionPercent Float    @default(15)
+  emergencySurchargePercent Float    @default(25)
+  cancellationWindowHours   Int      @default(24)
+  maxBookingsPerDayPerProvider Int    @default(10)
+  updatedAt                 DateTime @default(now()) @updatedAt
+  updatedBy                 String   @default("system")
+}
+
+model OTP {
+  id        String   @id @default(uuid())
+  phone     String
+  code      String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([phone])
+  @@index([expiresAt])
+}
+
