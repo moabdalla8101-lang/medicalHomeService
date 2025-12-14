@@ -82,6 +82,7 @@
   },
   "auth": {
     "login": "تسجيل الدخول",
+    "loginRequired": "تسجيل الدخول مطلوب",
     "logout": "تسجيل الخروج",
     "phoneNumber": "رقم الهاتف",
     "enterPhone": "أدخل رقم هاتفك",
@@ -99,7 +100,8 @@
     "verifying": "جاري التحقق...",
     "otpSentMessage": "سنرسل لك رمز التحقق",
     "enterOTPMessage": "أدخل الرمز المكون من 6 أرقام المرسل إلى هاتفك",
-    "changePhoneNumber": "تغيير رقم الهاتف"
+    "changePhoneNumber": "تغيير رقم الهاتف",
+    "verifyPhoneToBook": "يرجى التحقق من رقم هاتفك لحجز موعد"
   },
   "language": {
     "switch": "تغيير اللغة",

@@ -85,6 +85,7 @@
   },
   "auth": {
     "login": "Login",
+    "loginRequired": "Login Required",
     "logout": "Logout",
     "phoneNumber": "Phone Number",
     "enterPhone": "Enter Your Phone",
@@ -102,7 +103,8 @@
     "verifying": "Verifying...",
     "otpSentMessage": "We'll send you a verification code",
     "enterOTPMessage": "Enter the 6-digit code sent to your phone",
-    "changePhoneNumber": "Change phone number"
+    "changePhoneNumber": "Change phone number",
+    "verifyPhoneToBook": "Please verify your phone number to book an appointment"
   },
   "language": {
     "switch": "Switch Language",

@@ -364,12 +364,12 @@ export default function ProviderProfile({ provider }: ProviderProfileProps) {
 
       {/* Auth Modal */}
       {showAuthModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" dir={isRTL ? 'rtl' : 'ltr'}>
           <div className="bg-white rounded-2xl max-w-md w-full">
             <div className="p-6">
-              <h2 className="text-2xl font-bold mb-4">Login Required</h2>
-              <p className="text-gray-600 mb-6">
-                Please verify your phone number to book an appointment.
+              <h2 className={`text-2xl font-bold mb-4 ${isRTL ? 'text-right' : 'text-left'}`}>{t('auth.loginRequired') || t('auth.login')}</h2>
+              <p className={`text-gray-600 mb-6 ${isRTL ? 'text-right' : 'text-left'}`}>
+                {t('auth.verifyPhoneToBook') || t('booking.authenticationRequired')}
               </p>
               <PhoneAuth 
                 onSuccess={handleAuthSuccess} 
@@ -377,9 +377,9 @@ export default function ProviderProfile({ provider }: ProviderProfileProps) {
               />
               <button
                 onClick={() => setShowAuthModal(false)}
-                className="mt-4 w-full text-gray-600 hover:text-gray-900 text-sm"
+                className={`mt-4 w-full text-gray-600 hover:text-gray-900 text-sm ${isRTL ? 'text-right' : 'text-left'}`}
               >
-                Cancel
+                {t('common.cancel')}
               </button>
             </div>
           </div>

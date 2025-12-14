@@ -135,16 +135,17 @@ export default function PhoneAuth({ onSuccess, onAuthSuccess, role = 'user' }: P
               {t('auth.phoneNumber')} ({t('auth.kuwait') || 'Kuwait'})
             </label>
             <div className={`flex ${isRTL ? 'flex-row-reverse' : ''}`}>
-              <span className={`inline-flex items-center px-3 ${isRTL ? 'rounded-r-lg border-l-0 border-r' : 'rounded-l-lg border-r-0'} border border-gray-300 bg-gray-50 text-gray-500 text-sm`}>
-                +965
+              <span className={`inline-flex items-center px-3 ${isRTL ? 'rounded-r-lg border-l-0 border-r' : 'rounded-l-lg border-r-0'} border border-gray-300 bg-gray-50 text-gray-500 text-sm font-medium`}>
+                {isRTL ? '965+' : '+965'}
               </span>
               <input
                 type="tel"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 8))}
                 placeholder="XXXXXXXX"
-                className={`flex-1 px-4 py-3 border border-gray-300 ${isRTL ? 'rounded-l-lg' : 'rounded-r-lg'} focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none ${isRTL ? 'text-right' : 'text-left'}`}
+                className={`flex-1 px-4 py-3 border border-gray-300 ${isRTL ? 'rounded-l-lg border-r-0' : 'rounded-r-lg border-l-0'} focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none ${isRTL ? 'text-right' : 'text-left'} ${isRTL ? 'pr-4' : 'pl-4'}`}
                 maxLength={8}
+                dir="ltr"
               />
             </div>
             <p className={`mt-1 text-xs text-gray-500 ${isRTL ? 'text-right' : 'text-left'}`}>
