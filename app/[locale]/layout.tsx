@@ -29,7 +29,8 @@ export default async function LocaleLayout({
 
   // Providing all messages to the client
   // side is the easiest way to get started
-  const messages = await getMessages({ locale });
+  // getMessages automatically uses the locale from the request context
+  const messages = await getMessages();
 
   // Determine direction based on locale
   const dir = locale === 'ar' ? 'rtl' : 'ltr';

@@ -7,7 +7,18 @@ export const defaultLocale: Locale = 'ar';
 
 export default getRequestConfig(async ({ locale }) => {
   // Validate that the incoming `locale` parameter is valid
-  if (!locale || !locales.includes(locale as Locale)) notFound();
+  if (!locale) {
+    // If locale is not provided, use default locale
+    const validLocale = defaultLocale;
+    return {
+      locale: validLocale,
+      messages: (await import(`./messages/${validLocale}.json`)).default
+    };
+  }
+
+  if (!locales.includes(locale as Locale)) {
+    notFound();
+  }
 
   const validLocale = locale as Locale;
 
