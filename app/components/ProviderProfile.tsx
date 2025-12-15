@@ -157,7 +157,7 @@ export default function ProviderProfile({ provider }: ProviderProfileProps) {
             {isRTL ? (
               <>
                 {/* Info first in RTL */}
-                <div className={`flex-1 ${isRTL ? 'text-right' : 'text-left'}`} dir={isRTL ? 'rtl' : 'ltr'}>
+                <div className={`flex-1 ${isRTL ? 'text-right' : 'text-left'}`} dir="rtl">
                   <h1 className={`text-2xl sm:text-3xl font-bold text-gray-900 mb-2 ${isRTL ? 'text-right' : 'text-left'}`}>{provider.name}</h1>
                   <p className={`text-base sm:text-lg text-gray-600 mb-2 ${isRTL ? 'text-right' : 'text-left'}`}>{provider.specialty}</p>
                   
@@ -250,7 +250,7 @@ export default function ProviderProfile({ provider }: ProviderProfileProps) {
                   )}
                 </div>
                 {/* Info second in LTR */}
-                <div className={`flex-1 ${isRTL ? 'text-right' : 'text-left'}`} dir={isRTL ? 'rtl' : 'ltr'}>
+                <div className={`flex-1 ${isRTL ? 'text-right' : 'text-left'}`} dir="ltr">
               <h1 className={`text-2xl sm:text-3xl font-bold text-gray-900 mb-2 ${isRTL ? 'text-right' : 'text-left'}`}>{provider.name}</h1>
               <p className={`text-base sm:text-lg text-gray-600 mb-2 ${isRTL ? 'text-right' : 'text-left'}`}>{provider.specialty}</p>
               
