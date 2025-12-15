@@ -152,111 +152,39 @@ export default function ProviderProfile({ provider }: ProviderProfileProps) {
             <LanguageSwitcher />
           </div>
           
-          <div className="flex items-start gap-6" dir={isRTL ? 'rtl' : 'ltr'}>
-            {/* Profile Photo - order changes based on RTL */}
-            {isRTL ? (
-              <>
-                {/* Info first in RTL */}
-                <div className={`flex-1 ${isRTL ? 'text-right' : 'text-left'}`} dir="rtl">
-                  <h1 className={`text-2xl sm:text-3xl font-bold text-gray-900 mb-2 ${isRTL ? 'text-right' : 'text-left'}`}>{provider.name}</h1>
-                  <p className={`text-base sm:text-lg text-gray-600 mb-2 ${isRTL ? 'text-right' : 'text-left'}`}>{provider.specialty}</p>
-                  
-                  {/* Medical Centre */}
-                  {provider.medicalCentre && (
-                    <div className={`flex items-start gap-2 text-gray-600 mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
-                      <MapPin className={`w-5 h-5 flex-shrink-0 ${isRTL ? 'mt-0.5' : ''}`} />
-                      <div className={isRTL ? 'text-right' : 'text-left'}>
-                        <div className="font-medium">{provider.medicalCentre.name}</div>
-                        {provider.medicalCentre.address && (
-                          <div className="text-sm text-gray-500 mt-1">
-                            {provider.medicalCentre.address}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                  
-                  {/* Rating */}
-                  <div className={`flex items-center gap-2 mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
-                    <Star className="w-5 h-5 fill-yellow-400 text-yellow-400 flex-shrink-0" />
-                    <span className="text-lg font-semibold">{provider.rating.toFixed(1)}</span>
-                    <span className="text-gray-500">({provider.totalReviews} {t('provider.reviews')})</span>
-                  </div>
-
-                  {/* Experience */}
-                  {provider.experience && (
-                    <div className={`flex items-center gap-2 text-gray-600 mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
-                      <Clock className="w-5 h-5 flex-shrink-0" />
-                      <span>{provider.experience} {t('provider.experience')}</span>
-                    </div>
-                  )}
-
-                  {/* Emergency Badge */}
-                  {provider.emergencyAvailable && (
-                    <div className={`inline-flex items-center gap-2 bg-red-50 text-red-700 px-3 py-1 rounded-full text-sm font-semibold mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
-                      <AlertCircle className="w-4 h-4" />
-                      {t('provider.emergencyAvailable')}
-                    </div>
-                  )}
-
-                  {/* CTAs */}
-                  <div className={`flex gap-3 mt-6 flex-wrap ${isRTL ? 'flex-row-reverse' : ''}`}>
-                    <button
-                      onClick={() => handleBook('standard')}
-                      className="px-4 sm:px-6 py-2 sm:py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors text-sm sm:text-base"
-                    >
-                      {t('provider.bookAppointment')}
-                    </button>
-                    {provider.emergencyAvailable && (
-                      <button
-                        onClick={() => handleBook('emergency')}
-                        className={`px-4 sm:px-6 py-2 sm:py-3 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition-colors flex items-center gap-2 text-sm sm:text-base ${isRTL ? 'flex-row-reverse' : ''}`}
-                      >
-                        <AlertCircle className="w-4 sm:w-5 h-4 sm:h-5" />
-                        {t('provider.emergencyBooking')}
-                      </button>
-                    )}
-                  </div>
+          {/* Use CSS Grid for better RTL control */}
+          <div 
+            className={`grid ${isRTL ? 'grid-cols-[1fr_auto]' : 'grid-cols-[auto_1fr]'} gap-6 items-start`}
+            style={{ direction: isRTL ? 'rtl' : 'ltr' }}
+          >
+            {/* Profile Photo */}
+            <div 
+              className={`relative w-24 h-24 sm:w-32 sm:h-32 rounded-full overflow-hidden bg-gradient-to-br from-blue-100 to-indigo-100 flex-shrink-0 ${isRTL ? 'order-2' : 'order-1'}`}
+            >
+              {provider.profilePhoto ? (
+                <img
+                  src={provider.profilePhoto}
+                  alt={provider.name}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-4xl font-bold text-blue-600">
+                  {provider.name.charAt(0).toUpperCase()}
                 </div>
-                {/* Photo second in RTL */}
-                <div className="relative w-24 h-24 sm:w-32 sm:h-32 rounded-full overflow-hidden bg-gradient-to-br from-blue-100 to-indigo-100 flex-shrink-0">
-                  {provider.profilePhoto ? (
-                    <img
-                      src={provider.profilePhoto}
-                      alt={provider.name}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-4xl font-bold text-blue-600">
-                      {provider.name.charAt(0).toUpperCase()}
-                    </div>
-                  )}
-                </div>
-              </>
-            ) : (
-              <>
-                {/* Photo first in LTR */}
-                <div className="relative w-24 h-24 sm:w-32 sm:h-32 rounded-full overflow-hidden bg-gradient-to-br from-blue-100 to-indigo-100 flex-shrink-0">
-                  {provider.profilePhoto ? (
-                    <img
-                      src={provider.profilePhoto}
-                      alt={provider.name}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-4xl font-bold text-blue-600">
-                      {provider.name.charAt(0).toUpperCase()}
-                    </div>
-                  )}
-                </div>
-                {/* Info second in LTR */}
-                <div className={`flex-1 ${isRTL ? 'text-right' : 'text-left'}`} dir="ltr">
+              )}
+            </div>
+
+            {/* Info Section */}
+            <div 
+              className={`flex-1 ${isRTL ? 'text-right order-1' : 'text-left order-2'}`}
+              style={{ direction: isRTL ? 'rtl' : 'ltr' }}
+            >
               <h1 className={`text-2xl sm:text-3xl font-bold text-gray-900 mb-2 ${isRTL ? 'text-right' : 'text-left'}`}>{provider.name}</h1>
               <p className={`text-base sm:text-lg text-gray-600 mb-2 ${isRTL ? 'text-right' : 'text-left'}`}>{provider.specialty}</p>
               
               {/* Medical Centre */}
               {provider.medicalCentre && (
-                <div className={`flex items-start gap-2 text-gray-600 mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                <div className={`flex items-start gap-2 text-gray-600 mb-4 ${isRTL ? 'flex-row-reverse justify-end' : 'flex-row'}`}>
                   <MapPin className={`w-5 h-5 flex-shrink-0 ${isRTL ? 'mt-0.5' : ''}`} />
                   <div className={isRTL ? 'text-right' : 'text-left'}>
                     <div className="font-medium">{provider.medicalCentre.name}</div>
@@ -270,7 +198,7 @@ export default function ProviderProfile({ provider }: ProviderProfileProps) {
               )}
               
               {/* Rating */}
-              <div className={`flex items-center gap-2 mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
+              <div className={`flex items-center gap-2 mb-4 ${isRTL ? 'flex-row-reverse justify-end' : 'flex-row'}`}>
                 <Star className="w-5 h-5 fill-yellow-400 text-yellow-400 flex-shrink-0" />
                 <span className="text-lg font-semibold">{provider.rating.toFixed(1)}</span>
                 <span className="text-gray-500">({provider.totalReviews} {t('provider.reviews')})</span>
@@ -278,7 +206,7 @@ export default function ProviderProfile({ provider }: ProviderProfileProps) {
 
               {/* Experience */}
               {provider.experience && (
-                <div className={`flex items-center gap-2 text-gray-600 mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                <div className={`flex items-center gap-2 text-gray-600 mb-4 ${isRTL ? 'flex-row-reverse justify-end' : 'flex-row'}`}>
                   <Clock className="w-5 h-5 flex-shrink-0" />
                   <span>{provider.experience} {t('provider.experience')}</span>
                 </div>
@@ -286,14 +214,14 @@ export default function ProviderProfile({ provider }: ProviderProfileProps) {
 
               {/* Emergency Badge */}
               {provider.emergencyAvailable && (
-                <div className={`inline-flex items-center gap-2 bg-red-50 text-red-700 px-3 py-1 rounded-full text-sm font-semibold mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                <div className={`inline-flex items-center gap-2 bg-red-50 text-red-700 px-3 py-1 rounded-full text-sm font-semibold mb-4 ${isRTL ? 'flex-row-reverse ml-auto' : 'flex-row'}`}>
                   <AlertCircle className="w-4 h-4" />
                   {t('provider.emergencyAvailable')}
                 </div>
               )}
 
               {/* CTAs */}
-              <div className={`flex gap-3 mt-6 flex-wrap ${isRTL ? 'flex-row-reverse' : ''}`}>
+              <div className={`flex gap-3 mt-6 flex-wrap ${isRTL ? 'flex-row-reverse justify-end' : 'flex-row'}`}>
                 <button
                   onClick={() => handleBook('standard')}
                   className="px-4 sm:px-6 py-2 sm:py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors text-sm sm:text-base"
@@ -310,9 +238,7 @@ export default function ProviderProfile({ provider }: ProviderProfileProps) {
                   </button>
                 )}
               </div>
-                </div>
-              </>
-            )}
+            </div>
           </div>
         </div>
       </div>
