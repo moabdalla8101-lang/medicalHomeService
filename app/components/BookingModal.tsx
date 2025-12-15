@@ -75,7 +75,7 @@ export default function BookingModal({
     try {
       const token = localStorage.getItem('token');
       if (!token) {
-        toast.error('Please login first');
+        toast.error(t('booking.authenticationRequired'));
         setLoading(false);
         onClose(); // Close modal so user can login
         return;
@@ -107,15 +107,15 @@ export default function BookingModal({
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to create booking');
+        throw new Error(data.error || t('booking.failedToCreateBooking'));
       }
 
       // Store booking ID and show confirmation
       setBookingId(data.booking?.id || null);
       setStep('confirmation');
-      toast.success(type === 'emergency' ? 'Emergency request submitted!' : 'Booking confirmed!');
+      toast.success(type === 'emergency' ? t('booking.emergencyRequestSubmitted') : t('booking.bookingConfirmed'));
     } catch (error: any) {
-      toast.error(error.message || 'Failed to create booking');
+      toast.error(error.message || t('booking.failedToCreateBooking'));
     } finally {
       setLoading(false);
     }
@@ -133,10 +133,10 @@ export default function BookingModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" dir={isRTL ? 'rtl' : 'ltr'}>
-      <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div className={`bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto ${isRTL ? 'text-right' : 'text-left'}`} dir={isRTL ? 'rtl' : 'ltr'}>
         {/* Header */}
         <div className={`sticky top-0 bg-white border-b px-4 sm:px-6 py-4 flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
-          <h2 className="text-xl sm:text-2xl font-bold">
+          <h2 className={`text-xl sm:text-2xl font-bold ${isRTL ? 'text-right' : 'text-left'}`}>
             {type === 'emergency' ? t('booking.emergency') : t('booking.title')}
           </h2>
           <button
@@ -147,11 +147,11 @@ export default function BookingModal({
           </button>
         </div>
 
-        <div className="p-6 space-y-6">
+        <div className={`p-6 space-y-6 ${isRTL ? 'text-right' : 'text-left'}`} dir={isRTL ? 'rtl' : 'ltr'}>
           {/* Service Selection */}
           {step === 'service' && (
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Select Service</h3>
+            <div className={isRTL ? 'text-right' : 'text-left'}>
+              <h3 className={`text-lg font-semibold mb-4 ${isRTL ? 'text-right' : 'text-left'}`}>{t('booking.selectService')}</h3>
               <div className="space-y-2">
                 {services.map((s) => (
                   <label
@@ -160,9 +160,9 @@ export default function BookingModal({
                       selectedService === s.id
                         ? 'border-blue-500 bg-blue-50'
                         : 'border-gray-200 hover:border-gray-300'
-                    }`}
+                    } ${isRTL ? 'flex-row-reverse' : ''}`}
                   >
-                    <div>
+                    <div className={isRTL ? 'text-right' : 'text-left'}>
                       <input
                         type="radio"
                         name="service"
@@ -172,8 +172,8 @@ export default function BookingModal({
                         className="sr-only"
                       />
                       <span className="font-semibold">{s.name}</span>
-                      <span className="text-sm text-gray-500 ml-2">
-                        ({s.duration} min)
+                      <span className={`text-sm text-gray-500 ${isRTL ? 'mr-2' : 'ml-2'}`}>
+                        ({s.duration} {t('common.minutes')})
                       </span>
                     </div>
                     <span className="font-bold text-blue-600">{s.price} KWD</span>
@@ -185,13 +185,13 @@ export default function BookingModal({
 
           {/* Date & Time Selection */}
           {step === 'datetime' && (
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Select Date & Time</h3>
+            <div className={isRTL ? 'text-right' : 'text-left'}>
+              <h3 className={`text-lg font-semibold mb-4 ${isRTL ? 'text-right' : 'text-left'}`}>{t('booking.selectDateAndTime')}</h3>
               
               {/* Date Selection */}
               <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Date
+                <label className={`block text-sm font-medium text-gray-700 mb-2 ${isRTL ? 'text-right' : 'text-left'}`}>
+                  {t('booking.date')}
                 </label>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                   {availability.map((day) => (
@@ -207,7 +207,7 @@ export default function BookingModal({
                           : 'border-gray-200 hover:border-gray-300'
                       }`}
                     >
-                      {new Date(day.date).toLocaleDateString('en-US', {
+                      {new Date(day.date).toLocaleDateString(locale === 'ar' ? 'ar-KW' : 'en-US', {
                         month: 'short',
                         day: 'numeric',
                       })}
@@ -219,8 +219,8 @@ export default function BookingModal({
               {/* Time Slots */}
               {selectedDate && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Time Slot
+                  <label className={`block text-sm font-medium text-gray-700 mb-2 ${isRTL ? 'text-right' : 'text-left'}`}>
+                    {t('booking.timeSlot')}
                   </label>
                   <div className="grid grid-cols-3 gap-2">
                     {selectedDateSlots.map((slot) => (
@@ -244,31 +244,33 @@ export default function BookingModal({
 
           {/* Address */}
           {step === 'address' && (
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Service Address</h3>
+            <div className={isRTL ? 'text-right' : 'text-left'}>
+              <h3 className={`text-lg font-semibold mb-4 ${isRTL ? 'text-right' : 'text-left'}`}>{t('booking.serviceAddress')}</h3>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Full Address *
+                  <label className={`block text-sm font-medium text-gray-700 mb-2 ${isRTL ? 'text-right' : 'text-left'}`}>
+                    {t('booking.fullAddress')} *
                   </label>
                   <textarea
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
-                    placeholder="Enter your full address..."
+                    placeholder={t('booking.addressPlaceholder')}
                     rows={4}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                    className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none ${isRTL ? 'text-right' : 'text-left'}`}
+                    dir={isRTL ? 'rtl' : 'ltr'}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Notes (Optional)
+                  <label className={`block text-sm font-medium text-gray-700 mb-2 ${isRTL ? 'text-right' : 'text-left'}`}>
+                    {t('booking.notes')} ({t('common.optional')})
                   </label>
                   <textarea
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
-                    placeholder="Any special instructions or notes..."
+                    placeholder={t('booking.notesPlaceholder')}
                     rows={3}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                    className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none ${isRTL ? 'text-right' : 'text-left'}`}
+                    dir={isRTL ? 'rtl' : 'ltr'}
                   />
                 </div>
               </div>
@@ -277,53 +279,55 @@ export default function BookingModal({
 
           {/* Confirmation */}
           {step === 'confirmation' && (
-            <div className="text-center py-8">
+            <div className={`py-8 ${isRTL ? 'text-right' : 'text-center'}`}>
               <div className="flex justify-center mb-6">
                 <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center">
                   <CheckCircle className="w-12 h-12 text-green-600" />
                 </div>
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                {type === 'emergency' ? 'Emergency Request Received!' : 'Booking Confirmed!'}
+              <h3 className={`text-2xl font-bold text-gray-900 mb-4 ${isRTL ? 'text-right' : 'text-center'}`}>
+                {type === 'emergency' ? t('booking.emergencyRequestReceived') : t('booking.bookingConfirmed')}
               </h3>
-              <p className="text-lg text-gray-600 mb-2">
-                We have received your {type === 'emergency' ? 'emergency request' : 'booking'} and will contact you ASAP.
+              <p className={`text-lg text-gray-600 mb-2 ${isRTL ? 'text-right' : 'text-center'}`}>
+                {t('booking.bookingMessage')}
               </p>
-              <p className="text-sm text-gray-500 mb-6">
+              <p className={`text-sm text-gray-500 mb-6 ${isRTL ? 'text-right' : 'text-center'}`}>
                 {type === 'emergency' 
-                  ? 'Our team is finding the nearest available provider for you.'
-                  : 'You will receive a confirmation call shortly.'}
+                  ? t('booking.emergencyFindingProvider')
+                  : t('booking.confirmationCall')}
               </p>
               {bookingId && (
-                <div className="bg-gray-50 rounded-lg p-4 mb-6">
-                  <p className="text-sm text-gray-600">Booking Reference</p>
+                <div className={`bg-gray-50 rounded-lg p-4 mb-6 ${isRTL ? 'text-right' : 'text-center'}`}>
+                  <p className="text-sm text-gray-600">{t('booking.bookingReference')}</p>
                   <p className="font-mono text-sm font-semibold text-gray-900">{bookingId}</p>
                 </div>
               )}
-              <button
-                onClick={onClose}
-                className="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700"
-              >
-                Close
-              </button>
+              <div className={isRTL ? 'text-right' : 'text-center'}>
+                <button
+                  onClick={onClose}
+                  className="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700"
+                >
+                  {t('common.close')}
+                </button>
+              </div>
             </div>
           )}
 
           {/* Review */}
           {step === 'review' && service && (
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Review & Confirm</h3>
-              <div className="space-y-4 bg-gray-50 p-4 rounded-lg">
+            <div className={isRTL ? 'text-right' : 'text-left'}>
+              <h3 className={`text-lg font-semibold mb-4 ${isRTL ? 'text-right' : 'text-left'}`}>{t('booking.reviewAndConfirm')}</h3>
+              <div className={`space-y-4 bg-gray-50 p-4 rounded-lg ${isRTL ? 'text-right' : 'text-left'}`}>
                 <div>
-                  <p className="text-sm text-gray-600">Service</p>
+                  <p className="text-sm text-gray-600">{t('booking.service')}</p>
                   <p className="font-semibold">{service.name}</p>
                 </div>
                 {type === 'standard' && selectedDate && (
                   <>
                     <div>
-                      <p className="text-sm text-gray-600">Date & Time</p>
+                      <p className="text-sm text-gray-600">{t('booking.dateAndTime')}</p>
                       <p className="font-semibold">
-                        {new Date(selectedDate).toLocaleDateString('en-US', {
+                        {new Date(selectedDate).toLocaleDateString(locale === 'ar' ? 'ar-KW' : 'en-US', {
                           weekday: 'long',
                           month: 'long',
                           day: 'numeric',
@@ -335,26 +339,26 @@ export default function BookingModal({
                   </>
                 )}
                 <div>
-                  <p className="text-sm text-gray-600">Address</p>
+                  <p className="text-sm text-gray-600">{t('booking.address')}</p>
                   <p className="font-semibold">{address}</p>
                 </div>
                 <div className="border-t pt-4">
-                  <div className="flex justify-between mb-2">
-                    <span>Service Price</span>
+                  <div className={`flex justify-between mb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                    <span>{t('booking.servicePrice')}</span>
                     <span>{service.price} KWD</span>
                   </div>
                   {type === 'emergency' && (
-                    <div className="flex justify-between mb-2 text-red-600">
-                      <span>Emergency Surcharge (25%)</span>
+                    <div className={`flex justify-between mb-2 text-red-600 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                      <span>{t('booking.emergencySurcharge')} (25%)</span>
                       <span>{(service.price * 0.25).toFixed(2)} KWD</span>
                     </div>
                   )}
-                  <div className="flex justify-between mb-2 text-gray-600">
-                    <span>Platform Commission (15%)</span>
+                  <div className={`flex justify-between mb-2 text-gray-600 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                    <span>{t('booking.platformCommission')} (15%)</span>
                     <span>{(calculateTotal() - service.price - (type === 'emergency' ? service.price * 0.25 : 0)).toFixed(2)} KWD</span>
                   </div>
-                  <div className="flex justify-between font-bold text-lg border-t pt-2">
-                    <span>Total</span>
+                  <div className={`flex justify-between font-bold text-lg border-t pt-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                    <span>{t('booking.total')}</span>
                     <span>{calculateTotal().toFixed(2)} KWD</span>
                   </div>
                 </div>
@@ -364,7 +368,7 @@ export default function BookingModal({
 
           {/* Navigation */}
           {step !== 'confirmation' && (
-            <div className="flex justify-between pt-4 border-t">
+            <div className={`flex justify-between pt-4 border-t ${isRTL ? 'flex-row-reverse' : ''}`}>
               <button
                 onClick={() => {
                   if (step === 'datetime') setStep('service');
@@ -373,7 +377,7 @@ export default function BookingModal({
                 }}
                 className="px-4 py-2 text-gray-600 hover:text-gray-900"
               >
-                {step === 'service' ? 'Cancel' : 'Back'}
+                {step === 'service' ? t('common.cancel') : t('common.back')}
               </button>
               {step === 'review' ? (
                 <button
@@ -381,14 +385,14 @@ export default function BookingModal({
                   disabled={loading}
                   className="px-6 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-300"
                 >
-                  {loading ? 'Processing...' : 'Confirm & Pay'}
+                  {loading ? t('booking.processing') : t('booking.confirmAndPay')}
                 </button>
               ) : (
                 <button
                   onClick={handleNext}
                   className="px-6 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700"
                 >
-                  Next
+                  {t('common.next')}
                 </button>
               )}
             </div>

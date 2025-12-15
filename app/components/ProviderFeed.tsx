@@ -86,13 +86,18 @@ export default function ProviderFeed() {
     <div className="min-h-screen bg-gray-50" dir={isRTL ? 'rtl' : 'ltr'}>
       {/* Header */}
       <div className="bg-white shadow-sm sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className={`flex items-center gap-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
+        <div className={`max-w-7xl mx-auto px-4 py-4 ${isRTL ? 'text-right' : 'text-left'}`} dir={isRTL ? 'rtl' : 'ltr'}>
+          <div 
+            className={`grid ${isRTL ? 'grid-cols-[auto_1fr_auto]' : 'grid-cols-[auto_1fr_auto]'} gap-4 items-center`}
+            style={{ direction: isRTL ? 'rtl' : 'ltr' }}
+          >
             {/* Language Switcher */}
-            <LanguageSwitcher />
+            <div className={isRTL ? 'order-3' : 'order-1'}>
+              <LanguageSwitcher />
+            </div>
             
             {/* Search */}
-            <div className="flex-1 relative">
+            <div className={`flex-1 relative ${isRTL ? 'order-1' : 'order-2'}`}>
               <Search className={`absolute ${isRTL ? 'right-3' : 'left-3'} top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5`} />
               <input
                 type="text"
@@ -100,13 +105,14 @@ export default function ProviderFeed() {
                 value={filters.search}
                 onChange={(e) => setFilters({ ...filters, search: e.target.value })}
                 className={`w-full ${isRTL ? 'pr-10 pl-4 text-right' : 'pl-10 pr-4 text-left'} py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none`}
+                dir={isRTL ? 'rtl' : 'ltr'}
               />
             </div>
             
             {/* Filter Button */}
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
+              className={`px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2 ${isRTL ? 'flex-row-reverse order-2' : 'order-3'}`}
             >
               <Filter className="w-5 h-5" />
               {t('home.filterBy')}
