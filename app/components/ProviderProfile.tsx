@@ -310,7 +310,9 @@ export default function ProviderProfile({ provider }: ProviderProfileProps) {
                   </button>
                 )}
               </div>
-            </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
