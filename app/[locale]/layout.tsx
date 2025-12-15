@@ -44,8 +44,36 @@ export default async function LocaleLayout({
       <body className={locale === 'ar' ? 'font-arabic' : ''}>
         <NextIntlClientProvider messages={messages}>
           {children}
+          <Toaster 
+            position={locale === 'ar' ? 'top-left' : 'top-center'}
+            containerStyle={{
+              direction: locale === 'ar' ? 'rtl' : 'ltr',
+            }}
+            toastOptions={{
+              duration: 4000,
+              style: {
+                background: '#363636',
+                color: '#fff',
+                direction: locale === 'ar' ? 'rtl' : 'ltr',
+                textAlign: locale === 'ar' ? 'right' : 'left',
+              },
+              success: {
+                duration: 3000,
+                iconTheme: {
+                  primary: '#10b981',
+                  secondary: '#fff',
+                },
+              },
+              error: {
+                duration: 4000,
+                iconTheme: {
+                  primary: '#ef4444',
+                  secondary: '#fff',
+                },
+              },
+            }}
+          />
         </NextIntlClientProvider>
-        <Toaster position={locale === 'ar' ? 'top-left' : 'top-center'} />
       </body>
     </html>
   );

@@ -24,7 +24,12 @@ export default function PhoneAuth({ onSuccess, onAuthSuccess, role = 'user' }: P
 
   const handleSendOTP = async () => {
     if (!phone.trim()) {
-      toast.error('Please enter your phone number');
+      toast.error(t('auth.enterPhone'), {
+        style: {
+          direction: isRTL ? 'rtl' : 'ltr',
+          textAlign: isRTL ? 'right' : 'left',
+        }
+      });
       return;
     }
 
@@ -52,28 +57,40 @@ export default function PhoneAuth({ onSuccess, onAuthSuccess, role = 'user' }: P
         // Show OTP toast with longer duration, then show success message
         toast.success(`${t('auth.yourOTP') || 'Your OTP'}: ${data.otp}`, { 
           duration: 20000,
-          position: isRTL ? 'top-left' : 'top-center',
           style: {
             fontSize: '16px',
             fontWeight: 'bold',
+            direction: isRTL ? 'rtl' : 'ltr',
+            textAlign: isRTL ? 'right' : 'left',
           }
         });
         // Also show a brief success message
         setTimeout(() => {
           toast.success(t('auth.otpSent'), { 
             duration: 3000,
-            position: isRTL ? 'top-left' : 'top-center',
+            style: {
+              direction: isRTL ? 'rtl' : 'ltr',
+              textAlign: isRTL ? 'right' : 'left',
+            }
           });
         }, 500);
       } else {
         toast.success(t('auth.otpSent'), { 
           duration: 3000,
-          position: isRTL ? 'top-left' : 'top-center',
+          style: {
+            direction: isRTL ? 'rtl' : 'ltr',
+            textAlign: isRTL ? 'right' : 'left',
+          }
         });
       }
       setStep('otp');
     } catch (error: any) {
-      toast.error(error.message || 'Failed to send OTP');
+      toast.error(error.message || t('auth.failedToSendOTP'), {
+        style: {
+          direction: isRTL ? 'rtl' : 'ltr',
+          textAlign: isRTL ? 'right' : 'left',
+        }
+      });
     } finally {
       setLoading(false);
     }
@@ -83,7 +100,12 @@ export default function PhoneAuth({ onSuccess, onAuthSuccess, role = 'user' }: P
     // Clean and validate OTP
     const cleanOtp = otp.trim().replace(/\D/g, ''); // Remove non-digits
     if (!cleanOtp || cleanOtp.length !== 6) {
-      toast.error('Please enter a valid 6-digit OTP');
+      toast.error(t('auth.enterValidOTP'), {
+        style: {
+          direction: isRTL ? 'rtl' : 'ltr',
+          textAlign: isRTL ? 'right' : 'left',
+        }
+      });
       return;
     }
 
@@ -93,7 +115,12 @@ export default function PhoneAuth({ onSuccess, onAuthSuccess, role = 'user' }: P
       const phoneToVerify = normalizedPhone || phone;
       
       if (!phoneToVerify) {
-        toast.error('Phone number is missing. Please start over.');
+        toast.error(t('auth.phoneMissing'), {
+          style: {
+            direction: isRTL ? 'rtl' : 'ltr',
+            textAlign: isRTL ? 'right' : 'left',
+          }
+        });
         return;
       }
       
@@ -117,15 +144,25 @@ export default function PhoneAuth({ onSuccess, onAuthSuccess, role = 'user' }: P
       console.log('Response data:', data);
 
       if (!response.ok) {
-        throw new Error(data.error || 'Invalid OTP');
+        throw new Error(data.error || t('auth.invalidOTP'));
       }
 
-      toast.success(t('auth.loginSuccess'));
+      toast.success(t('auth.loginSuccess'), {
+        style: {
+          direction: isRTL ? 'rtl' : 'ltr',
+          textAlign: isRTL ? 'right' : 'left',
+        }
+      });
       if (handleSuccess) {
         handleSuccess(data.token, data.user);
       }
     } catch (error: any) {
-      toast.error(error.message || t('auth.invalidOTP'));
+      toast.error(error.message || t('auth.invalidOTP'), {
+        style: {
+          direction: isRTL ? 'rtl' : 'ltr',
+          textAlign: isRTL ? 'right' : 'left',
+        }
+      });
     } finally {
       setLoading(false);
     }

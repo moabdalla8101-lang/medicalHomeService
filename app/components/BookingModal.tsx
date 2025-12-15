@@ -53,15 +53,30 @@ export default function BookingModal({
 
   const handleNext = () => {
     if (step === 'service' && !selectedService) {
-      toast.error(t('booking.selectService'));
+      toast.error(t('booking.selectService'), {
+        style: {
+          direction: isRTL ? 'rtl' : 'ltr',
+          textAlign: isRTL ? 'right' : 'left',
+        }
+      });
       return;
     }
     if (step === 'datetime' && (!selectedDate || !selectedSlot)) {
-      toast.error(t('booking.selectDateTime'));
+      toast.error(t('booking.selectDateTime'), {
+        style: {
+          direction: isRTL ? 'rtl' : 'ltr',
+          textAlign: isRTL ? 'right' : 'left',
+        }
+      });
       return;
     }
     if (step === 'address' && !address.trim()) {
-      toast.error(t('booking.enterAddress'));
+      toast.error(t('booking.enterAddress'), {
+        style: {
+          direction: isRTL ? 'rtl' : 'ltr',
+          textAlign: isRTL ? 'right' : 'left',
+        }
+      });
       return;
     }
     
@@ -75,7 +90,12 @@ export default function BookingModal({
     try {
       const token = localStorage.getItem('token');
       if (!token) {
-        toast.error(t('booking.authenticationRequired'));
+        toast.error(t('booking.authenticationRequired'), {
+          style: {
+            direction: isRTL ? 'rtl' : 'ltr',
+            textAlign: isRTL ? 'right' : 'left',
+          }
+        });
         setLoading(false);
         onClose(); // Close modal so user can login
         return;
@@ -113,9 +133,19 @@ export default function BookingModal({
       // Store booking ID and show confirmation
       setBookingId(data.booking?.id || null);
       setStep('confirmation');
-      toast.success(type === 'emergency' ? t('booking.emergencyRequestSubmitted') : t('booking.bookingConfirmed'));
+      toast.success(type === 'emergency' ? t('booking.emergencyRequestSubmitted') : t('booking.bookingConfirmed'), {
+        style: {
+          direction: isRTL ? 'rtl' : 'ltr',
+          textAlign: isRTL ? 'right' : 'left',
+        }
+      });
     } catch (error: any) {
-      toast.error(error.message || t('booking.failedToCreateBooking'));
+      toast.error(error.message || t('booking.failedToCreateBooking'), {
+        style: {
+          direction: isRTL ? 'rtl' : 'ltr',
+          textAlign: isRTL ? 'right' : 'left',
+        }
+      });
     } finally {
       setLoading(false);
     }
