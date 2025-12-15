@@ -1,9 +1,7 @@
 'use client';
 
 import { Star, MapPin, Clock, AlertCircle } from 'lucide-react';
-import { useTranslations, useLocale } from 'next-intl';
 import { ProviderProfile } from '@/lib/types';
-import Image from 'next/image';
 
 interface ProviderCardProps {
   provider: {
@@ -20,9 +18,6 @@ interface ProviderCardProps {
 }
 
 export default function ProviderCard({ provider, onClick }: ProviderCardProps) {
-  const t = useTranslations();
-  const locale = useLocale();
-  const isRTL = locale === 'ar';
   const minPrice = Math.min(...provider.services.map(s => s.price));
   const maxPrice = Math.max(...provider.services.map(s => s.price));
   
@@ -30,7 +25,7 @@ export default function ProviderCard({ provider, onClick }: ProviderCardProps) {
     <div
       onClick={onClick}
       className="bg-white rounded-xl shadow-md overflow-hidden cursor-pointer hover:shadow-lg transition-shadow duration-200 group"
-      dir={isRTL ? 'rtl' : 'ltr'}
+      dir="rtl"
     >
       {/* Image */}
       <div className="relative w-full h-48 bg-gradient-to-br from-blue-100 to-indigo-100 overflow-hidden">
@@ -48,15 +43,15 @@ export default function ProviderCard({ provider, onClick }: ProviderCardProps) {
         
         {/* Emergency Badge */}
         {provider.emergencyAvailable && (
-          <div className={`absolute top-2 ${isRTL ? 'left-2' : 'right-2'} bg-red-500 text-white px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1`}>
+          <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1 flex-row-reverse">
             <AlertCircle className="w-3 h-3" />
-            {t('home.emergency')}
+            طوارئ
           </div>
         )}
         
         {/* Availability Badge */}
-        <div className={`absolute bottom-2 ${isRTL ? 'right-2' : 'left-2'} bg-green-500 text-white px-2 py-1 rounded-full text-xs font-semibold`}>
-          {t('home.available')}
+        <div className="absolute bottom-2 right-2 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-semibold">
+          متاح
         </div>
       </div>
       
@@ -69,28 +64,28 @@ export default function ProviderCard({ provider, onClick }: ProviderCardProps) {
         
         {/* Medical Centre */}
         {(provider as any).medicalCentre && (
-          <p className={`text-xs text-gray-500 mb-2 ${isRTL ? 'text-right' : 'text-left'}`}>
+          <p className="text-xs text-gray-500 mb-2 text-right">
             {(provider as any).medicalCentre.name}
           </p>
         )}
         
         {/* Rating */}
-        <div className={`flex items-center gap-1 mb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+        <div className="flex items-center gap-1 mb-2 flex-row-reverse">
           <Star className="w-4 h-4 fill-yellow-400 text-yellow-400 flex-shrink-0" />
           <span className="text-sm font-semibold text-gray-900">
             {provider.rating.toFixed(1)}
           </span>
           <span className="text-xs text-gray-500">
-            ({provider.totalReviews} {t('home.reviews')})
+            ({provider.totalReviews} تقييمات)
           </span>
         </div>
         
         {/* Price Range */}
-        <div className="flex items-center gap-2 text-sm text-gray-600">
+        <div className="flex items-center gap-2 text-sm text-gray-600 flex-row-reverse">
           <span className="font-semibold text-blue-600">
             {minPrice === maxPrice 
-              ? `${minPrice} KWD`
-              : `${minPrice} - ${maxPrice} KWD`
+              ? `${minPrice} د.ك`
+              : `${minPrice} - ${maxPrice} د.ك`
             }
           </span>
         </div>
@@ -98,4 +93,3 @@ export default function ProviderCard({ provider, onClick }: ProviderCardProps) {
     </div>
   );
 }
-

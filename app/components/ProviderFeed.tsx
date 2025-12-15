@@ -3,10 +3,8 @@
 import { useState, useEffect } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { Search, Filter, Loader2 } from 'lucide-react';
-import { useTranslations, useLocale } from 'next-intl';
 import ProviderCard from './ProviderCard';
 import ProviderFilters from './ProviderFilters';
-import LanguageSwitcher from './LanguageSwitcher';
 import { useRouter } from 'next/navigation';
 
 interface Provider {
@@ -22,9 +20,6 @@ interface Provider {
 
 export default function ProviderFeed() {
   const router = useRouter();
-  const t = useTranslations();
-  const locale = useLocale();
-  const isRTL = locale === 'ar';
   const [providers, setProviders] = useState<Provider[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -83,39 +78,31 @@ export default function ProviderFeed() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50" dir={isRTL ? 'rtl' : 'ltr'}>
+    <div className="min-h-screen bg-gray-50" dir="rtl">
       {/* Header */}
       <div className="bg-white shadow-sm sticky top-0 z-10">
-        <div className={`max-w-7xl mx-auto px-4 py-4 ${isRTL ? 'text-right' : 'text-left'}`} dir={isRTL ? 'rtl' : 'ltr'}>
-          <div 
-            className={`grid ${isRTL ? 'grid-cols-[auto_1fr_auto]' : 'grid-cols-[auto_1fr_auto]'} gap-4 items-center`}
-            style={{ direction: isRTL ? 'rtl' : 'ltr' }}
-          >
-            {/* Language Switcher */}
-            <div className={isRTL ? 'order-3' : 'order-1'}>
-              <LanguageSwitcher />
-            </div>
-            
+        <div className="max-w-7xl mx-auto px-4 py-4 text-right" dir="rtl">
+          <div className="grid grid-cols-[1fr_auto] gap-4 items-center" style={{ direction: 'rtl' }}>
             {/* Search */}
-            <div className={`flex-1 relative ${isRTL ? 'order-1' : 'order-2'}`}>
-              <Search className={`absolute ${isRTL ? 'right-3' : 'left-3'} top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5`} />
+            <div className="flex-1 relative">
+              <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
-                placeholder={t('home.searchPlaceholder')}
+                placeholder="ابحث عن مقدم خدمة..."
                 value={filters.search}
                 onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-                className={`w-full ${isRTL ? 'pr-10 pl-4 text-right' : 'pl-10 pr-4 text-left'} py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none`}
-                dir={isRTL ? 'rtl' : 'ltr'}
+                className="w-full pr-10 pl-4 text-right py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                dir="rtl"
               />
             </div>
             
             {/* Filter Button */}
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className={`px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2 ${isRTL ? 'flex-row-reverse order-2' : 'order-3'}`}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2 flex-row-reverse"
             >
               <Filter className="w-5 h-5" />
-              {t('home.filterBy')}
+              تصفية حسب
             </button>
           </div>
         </div>
@@ -142,7 +129,7 @@ export default function ProviderFeed() {
           </div>
         ) : providers.length === 0 ? (
           <div className="text-center py-20">
-            <p className="text-gray-500 text-lg">{t('home.noProviders')}</p>
+            <p className="text-gray-500 text-lg">لا توجد مقدمي خدمات</p>
           </div>
         ) : (
           <InfiniteScroll
@@ -160,7 +147,7 @@ export default function ProviderFeed() {
               <ProviderCard
                 key={provider.id}
                 provider={provider}
-                onClick={() => router.push(`/${locale}/providers/${provider.id}`)}
+                onClick={() => router.push(`/providers/${provider.id}`)}
               />
             ))}
           </InfiniteScroll>
@@ -169,4 +156,3 @@ export default function ProviderFeed() {
     </div>
   );
 }
-

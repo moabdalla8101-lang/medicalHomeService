@@ -1,20 +1,7 @@
-import createMiddleware from 'next-intl/middleware';
-import { locales, defaultLocale } from './i18n';
 import { NextRequest, NextResponse } from 'next/server';
 
-const intlMiddleware = createMiddleware({
-  // A list of all locales that are supported
-  locales,
-
-  // Used when no locale matches
-  defaultLocale,
-  
-  // Always show locale prefix
-  localePrefix: 'always'
-});
-
 export default function middleware(request: NextRequest) {
-  // Skip middleware for API routes, admin, provider, medical-centre routes
+  // Skip middleware for API routes, admin, provider, medical-centre routes, and static files
   const pathname = request.nextUrl.pathname;
   
   if (
@@ -29,12 +16,11 @@ export default function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Apply intl middleware for all other routes
-  return intlMiddleware(request);
+  // All customer-facing routes are now Arabic-only, no locale prefix needed
+  return NextResponse.next();
 }
 
 export const config = {
   // Match all routes except static files and API routes
   matcher: ['/((?!api|_next|_vercel|.*\\..*).*)']
 };
-

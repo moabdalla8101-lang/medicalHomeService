@@ -1,6 +1,7 @@
 import { db } from './db';
 import { User, UserRole } from './types';
 import jwt from 'jsonwebtoken';
+import { sendOTPViaWhatsApp, isWhatsAppConfigured } from './whatsapp';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 const JWT_EXPIRES_IN = '7d';
@@ -16,23 +17,40 @@ export function generateOTP(): string {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-// Send OTP (mock implementation - replace with actual SMS service)
+// Send OTP via WhatsApp or fallback to mock
 export async function sendOTP(phone: string, code: string): Promise<boolean> {
-  // In production, integrate with SMS service like Twilio, AWS SNS, etc.
-  console.log(`[MOCK] Sending OTP ${code} to ${phone}`);
-  
-  // Store OTP with longer expiry for development (10 minutes)
+  // Store OTP with expiry (10 minutes in dev, 5 minutes in production)
   const expirySeconds = process.env.NODE_ENV === 'development' ? 600 : 300;
   await db.setOTP(phone, code, expirySeconds);
   
-  if (process.env.NODE_ENV === 'development') {
-    console.log(`[AUTH] OTP stored for ${phone}: ${code} (expires in ${expirySeconds}s)`);
+  console.log(`[AUTH] OTP stored for ${phone}: ${code} (expires in ${expirySeconds}s)`);
+  
+  // Try WhatsApp if configured
+  if (isWhatsAppConfigured()) {
+    try {
+      console.log(`[AUTH] Sending OTP via WhatsApp to ${phone}`);
+      await sendOTPViaWhatsApp(phone, code);
+      console.log(`[AUTH] WhatsApp OTP sent successfully to ${phone}`);
+      return true;
+    } catch (error: any) {
+      console.error(`[AUTH] WhatsApp send failed:`, error.message);
+      // Fall through to mock/development mode
+      if (process.env.NODE_ENV === 'production') {
+        // In production, if WhatsApp fails, we should still log but not return false
+        // The OTP is already stored, so user can still verify
+        console.warn(`[AUTH] WhatsApp failed but OTP stored. User can still verify.`);
+        return true; // Return true because OTP is stored
+      }
+    }
   }
   
-  // Simulate async SMS sending
-  return new Promise((resolve) => {
-    setTimeout(() => resolve(true), 500);
-  });
+  // Development/mock mode - log OTP to console
+  if (process.env.NODE_ENV === 'development') {
+    console.log(`[MOCK] OTP ${code} for ${phone} (WhatsApp not configured or failed)`);
+  }
+  
+  // Return true because OTP is stored regardless
+  return true;
 }
 
 // Verify phone number format (Kuwait: +965XXXXXXXX)

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useTranslations, useLocale } from 'next-intl';
 import { X, MapPin, Calendar, Clock, DollarSign, AlertCircle, CheckCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -34,9 +33,6 @@ export default function BookingModal({
   type,
   onClose,
 }: BookingModalProps) {
-  const t = useTranslations();
-  const locale = useLocale();
-  const isRTL = locale === 'ar';
   const [step, setStep] = useState<'service' | 'datetime' | 'address' | 'review' | 'confirmation'>(
     type === 'emergency' ? 'address' : 'service'
   );
@@ -53,28 +49,28 @@ export default function BookingModal({
 
   const handleNext = () => {
     if (step === 'service' && !selectedService) {
-      toast.error(t('booking.selectService'), {
+      toast.error('اختر الخدمة', {
         style: {
-          direction: isRTL ? 'rtl' : 'ltr',
-          textAlign: isRTL ? 'right' : 'left',
+          direction: 'rtl',
+          textAlign: 'right',
         }
       });
       return;
     }
     if (step === 'datetime' && (!selectedDate || !selectedSlot)) {
-      toast.error(t('booking.selectDateTime'), {
+      toast.error('يرجى اختيار التاريخ والوقت', {
         style: {
-          direction: isRTL ? 'rtl' : 'ltr',
-          textAlign: isRTL ? 'right' : 'left',
+          direction: 'rtl',
+          textAlign: 'right',
         }
       });
       return;
     }
     if (step === 'address' && !address.trim()) {
-      toast.error(t('booking.enterAddress'), {
+      toast.error('يرجى إدخال العنوان', {
         style: {
-          direction: isRTL ? 'rtl' : 'ltr',
-          textAlign: isRTL ? 'right' : 'left',
+          direction: 'rtl',
+          textAlign: 'right',
         }
       });
       return;
@@ -90,10 +86,10 @@ export default function BookingModal({
     try {
       const token = localStorage.getItem('token');
       if (!token) {
-        toast.error(t('booking.authenticationRequired'), {
+        toast.error('يجب تسجيل الدخول للمتابعة', {
           style: {
-            direction: isRTL ? 'rtl' : 'ltr',
-            textAlign: isRTL ? 'right' : 'left',
+            direction: 'rtl',
+            textAlign: 'right',
           }
         });
         setLoading(false);
@@ -127,23 +123,23 @@ export default function BookingModal({
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || t('booking.failedToCreateBooking'));
+        throw new Error(data.error || 'فشل إنشاء الحجز');
       }
 
       // Store booking ID and show confirmation
       setBookingId(data.booking?.id || null);
       setStep('confirmation');
-      toast.success(type === 'emergency' ? t('booking.emergencyRequestSubmitted') : t('booking.bookingConfirmed'), {
+      toast.success(type === 'emergency' ? 'تم إرسال طلب الطوارئ!' : 'تم تأكيد الحجز', {
         style: {
-          direction: isRTL ? 'rtl' : 'ltr',
-          textAlign: isRTL ? 'right' : 'left',
+          direction: 'rtl',
+          textAlign: 'right',
         }
       });
     } catch (error: any) {
-      toast.error(error.message || t('booking.failedToCreateBooking'), {
+      toast.error(error.message || 'فشل إنشاء الحجز', {
         style: {
-          direction: isRTL ? 'rtl' : 'ltr',
-          textAlign: isRTL ? 'right' : 'left',
+          direction: 'rtl',
+          textAlign: 'right',
         }
       });
     } finally {
@@ -162,12 +158,12 @@ export default function BookingModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" dir={isRTL ? 'rtl' : 'ltr'}>
-      <div className={`bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto ${isRTL ? 'text-right' : 'text-left'}`} dir={isRTL ? 'rtl' : 'ltr'}>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" dir="rtl">
+      <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto text-right" dir="rtl">
         {/* Header */}
-        <div className={`sticky top-0 bg-white border-b px-4 sm:px-6 py-4 flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
-          <h2 className={`text-xl sm:text-2xl font-bold ${isRTL ? 'text-right' : 'text-left'}`}>
-            {type === 'emergency' ? t('booking.emergency') : t('booking.title')}
+        <div className="sticky top-0 bg-white border-b px-4 sm:px-6 py-4 flex items-center justify-between flex-row-reverse">
+          <h2 className="text-xl sm:text-2xl font-bold text-right">
+            {type === 'emergency' ? 'حجز طوارئ' : 'حجز موعد'}
           </h2>
           <button
             onClick={onClose}
@@ -177,11 +173,11 @@ export default function BookingModal({
           </button>
         </div>
 
-        <div className={`p-6 space-y-6 ${isRTL ? 'text-right' : 'text-left'}`} dir={isRTL ? 'rtl' : 'ltr'}>
+        <div className="p-6 space-y-6 text-right" dir="rtl">
           {/* Service Selection */}
           {step === 'service' && (
-            <div className={isRTL ? 'text-right' : 'text-left'}>
-              <h3 className={`text-lg font-semibold mb-4 ${isRTL ? 'text-right' : 'text-left'}`}>{t('booking.selectService')}</h3>
+            <div className="text-right">
+              <h3 className="text-lg font-semibold mb-4 text-right">اختر الخدمة</h3>
               <div className="space-y-2">
                 {services.map((s) => (
                   <label
@@ -190,9 +186,9 @@ export default function BookingModal({
                       selectedService === s.id
                         ? 'border-blue-500 bg-blue-50'
                         : 'border-gray-200 hover:border-gray-300'
-                    } ${isRTL ? 'flex-row-reverse' : ''}`}
+                    } flex-row-reverse`}
                   >
-                    <div className={isRTL ? 'text-right' : 'text-left'}>
+                    <div className="text-right">
                       <input
                         type="radio"
                         name="service"
@@ -202,8 +198,8 @@ export default function BookingModal({
                         className="sr-only"
                       />
                       <span className="font-semibold">{s.name}</span>
-                      <span className={`text-sm text-gray-500 ${isRTL ? 'mr-2' : 'ml-2'}`}>
-                        ({s.duration} {t('common.minutes')})
+                      <span className="text-sm text-gray-500 mr-2">
+                        ({s.duration} دقيقة)
                       </span>
                     </div>
                     <span className="font-bold text-blue-600">{s.price} KWD</span>
@@ -215,13 +211,13 @@ export default function BookingModal({
 
           {/* Date & Time Selection */}
           {step === 'datetime' && (
-            <div className={isRTL ? 'text-right' : 'text-left'}>
-              <h3 className={`text-lg font-semibold mb-4 ${isRTL ? 'text-right' : 'text-left'}`}>{t('booking.selectDateAndTime')}</h3>
+            <div className="text-right">
+              <h3 className="text-lg font-semibold mb-4 text-right">اختر التاريخ والوقت</h3>
               
               {/* Date Selection */}
               <div className="mb-6">
-                <label className={`block text-sm font-medium text-gray-700 mb-2 ${isRTL ? 'text-right' : 'text-left'}`}>
-                  {t('booking.date')}
+                <label className="block text-sm font-medium text-gray-700 mb-2 text-right">
+                  التاريخ
                 </label>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                   {availability.map((day) => (
@@ -237,7 +233,7 @@ export default function BookingModal({
                           : 'border-gray-200 hover:border-gray-300'
                       }`}
                     >
-                      {new Date(day.date).toLocaleDateString(locale === 'ar' ? 'ar-KW' : 'en-US', {
+                      {new Date(day.date).toLocaleDateString('ar-KW', {
                         month: 'short',
                         day: 'numeric',
                       })}
@@ -249,8 +245,8 @@ export default function BookingModal({
               {/* Time Slots */}
               {selectedDate && (
                 <div>
-                  <label className={`block text-sm font-medium text-gray-700 mb-2 ${isRTL ? 'text-right' : 'text-left'}`}>
-                    {t('booking.timeSlot')}
+                  <label className="block text-sm font-medium text-gray-700 mb-2 text-right">
+                    الوقت
                   </label>
                   <div className="grid grid-cols-3 gap-2">
                     {selectedDateSlots.map((slot) => (
@@ -274,33 +270,33 @@ export default function BookingModal({
 
           {/* Address */}
           {step === 'address' && (
-            <div className={isRTL ? 'text-right' : 'text-left'}>
-              <h3 className={`text-lg font-semibold mb-4 ${isRTL ? 'text-right' : 'text-left'}`}>{t('booking.serviceAddress')}</h3>
+            <div className="text-right">
+              <h3 className="text-lg font-semibold mb-4 text-right">عنوان الخدمة</h3>
               <div className="space-y-4">
                 <div>
-                  <label className={`block text-sm font-medium text-gray-700 mb-2 ${isRTL ? 'text-right' : 'text-left'}`}>
-                    {t('booking.fullAddress')} *
+                  <label className="block text-sm font-medium text-gray-700 mb-2 text-right">
+                    العنوان الكامل *
                   </label>
                   <textarea
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
-                    placeholder={t('booking.addressPlaceholder')}
+                    placeholder="أدخل عنوانك الكامل"
                     rows={4}
-                    className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none ${isRTL ? 'text-right' : 'text-left'}`}
-                    dir={isRTL ? 'rtl' : 'ltr'}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-right"
+                    dir="rtl"
                   />
                 </div>
                 <div>
-                  <label className={`block text-sm font-medium text-gray-700 mb-2 ${isRTL ? 'text-right' : 'text-left'}`}>
-                    {t('booking.notes')} ({t('common.optional')})
+                  <label className="block text-sm font-medium text-gray-700 mb-2 text-right">
+                    ملاحظات (اختياري)
                   </label>
                   <textarea
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
-                    placeholder={t('booking.notesPlaceholder')}
+                    placeholder="أي ملاحظات إضافية..."
                     rows={3}
-                    className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none ${isRTL ? 'text-right' : 'text-left'}`}
-                    dir={isRTL ? 'rtl' : 'ltr'}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-right"
+                    dir="rtl"
                   />
                 </div>
               </div>
@@ -309,35 +305,35 @@ export default function BookingModal({
 
           {/* Confirmation */}
           {step === 'confirmation' && (
-            <div className={`py-8 ${isRTL ? 'text-right' : 'text-center'}`}>
+            <div className="py-8 text-center">
               <div className="flex justify-center mb-6">
                 <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center">
                   <CheckCircle className="w-12 h-12 text-green-600" />
                 </div>
               </div>
-              <h3 className={`text-2xl font-bold text-gray-900 mb-4 ${isRTL ? 'text-right' : 'text-center'}`}>
-                {type === 'emergency' ? t('booking.emergencyRequestReceived') : t('booking.bookingConfirmed')}
+              <h3 className="text-2xl font-bold text-gray-900 mb-4 text-center">
+                {type === 'emergency' ? 'تم استلام طلب الطوارئ!' : 'تم تأكيد الحجز'}
               </h3>
-              <p className={`text-lg text-gray-600 mb-2 ${isRTL ? 'text-right' : 'text-center'}`}>
-                {t('booking.bookingMessage')}
+              <p className="text-lg text-gray-600 mb-2 text-center">
+                لقد استلمنا طلبك وسنتواصل معك قريباً
               </p>
-              <p className={`text-sm text-gray-500 mb-6 ${isRTL ? 'text-right' : 'text-center'}`}>
+              <p className="text-sm text-gray-500 mb-6 text-center">
                 {type === 'emergency' 
-                  ? t('booking.emergencyFindingProvider')
-                  : t('booking.confirmationCall')}
+                  ? 'فريقنا يبحث عن أقرب مقدم خدمة متاح لك'
+                  : 'ستتلقى مكالمة تأكيد قريباً'}
               </p>
               {bookingId && (
-                <div className={`bg-gray-50 rounded-lg p-4 mb-6 ${isRTL ? 'text-right' : 'text-center'}`}>
-                  <p className="text-sm text-gray-600">{t('booking.bookingReference')}</p>
+                <div className="bg-gray-50 rounded-lg p-4 mb-6 text-center">
+                  <p className="text-sm text-gray-600">رقم الحجز</p>
                   <p className="font-mono text-sm font-semibold text-gray-900">{bookingId}</p>
                 </div>
               )}
-              <div className={isRTL ? 'text-right' : 'text-center'}>
+              <div className="text-center">
                 <button
                   onClick={onClose}
                   className="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700"
                 >
-                  {t('common.close')}
+                  إغلاق
                 </button>
               </div>
             </div>
@@ -345,19 +341,19 @@ export default function BookingModal({
 
           {/* Review */}
           {step === 'review' && service && (
-            <div className={isRTL ? 'text-right' : 'text-left'}>
-              <h3 className={`text-lg font-semibold mb-4 ${isRTL ? 'text-right' : 'text-left'}`}>{t('booking.reviewAndConfirm')}</h3>
-              <div className={`space-y-4 bg-gray-50 p-4 rounded-lg ${isRTL ? 'text-right' : 'text-left'}`}>
+            <div className="text-right">
+              <h3 className="text-lg font-semibold mb-4 text-right">مراجعة وتأكيد</h3>
+              <div className="space-y-4 bg-gray-50 p-4 rounded-lg text-right">
                 <div>
-                  <p className="text-sm text-gray-600">{t('booking.service')}</p>
+                  <p className="text-sm text-gray-600">الخدمة</p>
                   <p className="font-semibold">{service.name}</p>
                 </div>
                 {type === 'standard' && selectedDate && (
                   <>
                     <div>
-                      <p className="text-sm text-gray-600">{t('booking.dateAndTime')}</p>
+                      <p className="text-sm text-gray-600">التاريخ والوقت</p>
                       <p className="font-semibold">
-                        {new Date(selectedDate).toLocaleDateString(locale === 'ar' ? 'ar-KW' : 'en-US', {
+                        {new Date(selectedDate).toLocaleDateString('ar-KW', {
                           weekday: 'long',
                           month: 'long',
                           day: 'numeric',
@@ -369,27 +365,27 @@ export default function BookingModal({
                   </>
                 )}
                 <div>
-                  <p className="text-sm text-gray-600">{t('booking.address')}</p>
+                  <p className="text-sm text-gray-600">العنوان</p>
                   <p className="font-semibold">{address}</p>
                 </div>
                 <div className="border-t pt-4">
-                  <div className={`flex justify-between mb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
-                    <span>{t('booking.servicePrice')}</span>
-                    <span>{service.price} KWD</span>
+                  <div className="flex justify-between mb-2 flex-row-reverse">
+                    <span>سعر الخدمة</span>
+                    <span>{service.price} د.ك</span>
                   </div>
                   {type === 'emergency' && (
-                    <div className={`flex justify-between mb-2 text-red-600 ${isRTL ? 'flex-row-reverse' : ''}`}>
-                      <span>{t('booking.emergencySurcharge')} (25%)</span>
-                      <span>{(service.price * 0.25).toFixed(2)} KWD</span>
+                    <div className="flex justify-between mb-2 text-red-600 flex-row-reverse">
+                      <span>رسوم الطوارئ (25%)</span>
+                      <span>{(service.price * 0.25).toFixed(2)} د.ك</span>
                     </div>
                   )}
-                  <div className={`flex justify-between mb-2 text-gray-600 ${isRTL ? 'flex-row-reverse' : ''}`}>
-                    <span>{t('booking.platformCommission')} (15%)</span>
-                    <span>{(calculateTotal() - service.price - (type === 'emergency' ? service.price * 0.25 : 0)).toFixed(2)} KWD</span>
+                  <div className="flex justify-between mb-2 text-gray-600 flex-row-reverse">
+                    <span>عمولة المنصة (15%)</span>
+                    <span>{(calculateTotal() - service.price - (type === 'emergency' ? service.price * 0.25 : 0)).toFixed(2)} د.ك</span>
                   </div>
-                  <div className={`flex justify-between font-bold text-lg border-t pt-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
-                    <span>{t('booking.total')}</span>
-                    <span>{calculateTotal().toFixed(2)} KWD</span>
+                  <div className="flex justify-between font-bold text-lg border-t pt-2 flex-row-reverse">
+                    <span>الإجمالي</span>
+                    <span>{calculateTotal().toFixed(2)} د.ك</span>
                   </div>
                 </div>
               </div>
@@ -398,7 +394,7 @@ export default function BookingModal({
 
           {/* Navigation */}
           {step !== 'confirmation' && (
-            <div className={`flex justify-between pt-4 border-t ${isRTL ? 'flex-row-reverse' : ''}`}>
+            <div className="flex justify-between pt-4 border-t flex-row-reverse">
               <button
                 onClick={() => {
                   if (step === 'datetime') setStep('service');
@@ -407,7 +403,7 @@ export default function BookingModal({
                 }}
                 className="px-4 py-2 text-gray-600 hover:text-gray-900"
               >
-                {step === 'service' ? t('common.cancel') : t('common.back')}
+                {step === 'service' ? 'إلغاء' : 'رجوع'}
               </button>
               {step === 'review' ? (
                 <button
@@ -415,14 +411,14 @@ export default function BookingModal({
                   disabled={loading}
                   className="px-6 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-300"
                 >
-                  {loading ? t('booking.processing') : t('booking.confirmAndPay')}
+                  {loading ? 'جاري المعالجة...' : 'تأكيد والدفع'}
                 </button>
               ) : (
                 <button
                   onClick={handleNext}
                   className="px-6 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700"
                 >
-                  {t('common.next')}
+                  التالي
                 </button>
               )}
             </div>

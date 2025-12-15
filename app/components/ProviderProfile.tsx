@@ -2,11 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useTranslations, useLocale } from 'next-intl';
 import { Star, MapPin, Clock, AlertCircle, Calendar, DollarSign, MessageSquare, ArrowLeft } from 'lucide-react';
 import BookingModal from './BookingModal';
 import PhoneAuth from './PhoneAuth';
-import LanguageSwitcher from './LanguageSwitcher';
 
 interface ProviderProfileProps {
   provider: {
@@ -53,9 +51,6 @@ interface ProviderProfileProps {
 
 export default function ProviderProfile({ provider }: ProviderProfileProps) {
   const router = useRouter();
-  const t = useTranslations();
-  const locale = useLocale();
-  const isRTL = locale === 'ar';
   const [selectedService, setSelectedService] = useState<string | null>(null);
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -107,7 +102,7 @@ export default function ProviderProfile({ provider }: ProviderProfileProps) {
 
   const handleBook = (type: 'standard' | 'emergency') => {
     if (provider.services.length === 0) {
-      alert(t('booking.noServicesAvailable') || 'No services available');
+      alert('لا توجد خدمات متاحة');
       return;
     }
 
@@ -126,7 +121,7 @@ export default function ProviderProfile({ provider }: ProviderProfileProps) {
 
   const handleBookAfterAuth = () => {
     if (provider.services.length === 0) {
-      alert('No services available');
+      alert('لا توجد خدمات متاحة');
       return;
     }
     setSelectedService(provider.services[0].id);
@@ -134,32 +129,29 @@ export default function ProviderProfile({ provider }: ProviderProfileProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50" dir={isRTL ? 'rtl' : 'ltr'}>
+    <div className="min-h-screen bg-gray-50" dir="rtl">
       {/* Header */}
       <div className="bg-white shadow-sm">
-        <div className={`max-w-4xl mx-auto px-4 py-6 ${isRTL ? 'text-right' : 'text-left'}`} dir={isRTL ? 'rtl' : 'ltr'}>
-          <div className={`flex items-center justify-between mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
+        <div className="max-w-4xl mx-auto px-4 py-6 text-right" dir="rtl">
+          <div className="flex items-center justify-between mb-4 flex-row-reverse">
             {/* Back Button */}
             <button
-              onClick={() => router.push(`/${locale}`)}
-              className={`flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors ${isRTL ? 'flex-row-reverse' : ''}`}
+              onClick={() => router.push('/')}
+              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors flex-row-reverse"
             >
-              <ArrowLeft className={`w-5 h-5 ${isRTL ? 'rotate-180' : ''}`} />
-              <span className="font-medium">{t('provider.backToHome')}</span>
+              <ArrowLeft className="w-5 h-5 rotate-180" />
+              <span className="font-medium">العودة للصفحة الرئيسية</span>
             </button>
-            
-            {/* Language Switcher */}
-            <LanguageSwitcher />
           </div>
           
           {/* Use CSS Grid for better RTL control */}
           <div 
-            className={`grid ${isRTL ? 'grid-cols-[1fr_auto]' : 'grid-cols-[auto_1fr]'} gap-6 items-start`}
-            style={{ direction: isRTL ? 'rtl' : 'ltr' }}
+            className="grid grid-cols-[1fr_auto] gap-6 items-start"
+            style={{ direction: 'rtl' }}
           >
             {/* Profile Photo */}
             <div 
-              className={`relative w-24 h-24 sm:w-32 sm:h-32 rounded-full overflow-hidden bg-gradient-to-br from-blue-100 to-indigo-100 flex-shrink-0 ${isRTL ? 'order-2' : 'order-1'}`}
+              className="relative w-24 h-24 sm:w-32 sm:h-32 rounded-full overflow-hidden bg-gradient-to-br from-blue-100 to-indigo-100 flex-shrink-0 order-2"
             >
               {provider.profilePhoto ? (
                 <img
@@ -176,17 +168,17 @@ export default function ProviderProfile({ provider }: ProviderProfileProps) {
 
             {/* Info Section */}
             <div 
-              className={`flex-1 ${isRTL ? 'text-right order-1' : 'text-left order-2'}`}
-              style={{ direction: isRTL ? 'rtl' : 'ltr' }}
+              className="flex-1 text-right order-1"
+              style={{ direction: 'rtl' }}
             >
-              <h1 className={`text-2xl sm:text-3xl font-bold text-gray-900 mb-2 ${isRTL ? 'text-right' : 'text-left'}`}>{provider.name}</h1>
-              <p className={`text-base sm:text-lg text-gray-600 mb-2 ${isRTL ? 'text-right' : 'text-left'}`}>{provider.specialty}</p>
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 text-right">{provider.name}</h1>
+              <p className="text-base sm:text-lg text-gray-600 mb-2 text-right">{provider.specialty}</p>
               
               {/* Medical Centre */}
               {provider.medicalCentre && (
-                <div className={`flex items-start gap-2 text-gray-600 mb-4 ${isRTL ? 'flex-row-reverse justify-end' : 'flex-row'}`}>
-                  <MapPin className={`w-5 h-5 flex-shrink-0 ${isRTL ? 'mt-0.5' : ''}`} />
-                  <div className={isRTL ? 'text-right' : 'text-left'}>
+                <div className="flex items-start gap-2 text-gray-600 mb-4 flex-row-reverse justify-end">
+                  <MapPin className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                  <div className="text-right">
                     <div className="font-medium">{provider.medicalCentre.name}</div>
                     {provider.medicalCentre.address && (
                       <div className="text-sm text-gray-500 mt-1">
@@ -198,43 +190,43 @@ export default function ProviderProfile({ provider }: ProviderProfileProps) {
               )}
               
               {/* Rating */}
-              <div className={`flex items-center gap-2 mb-4 ${isRTL ? 'flex-row-reverse justify-end' : 'flex-row'}`}>
+              <div className="flex items-center gap-2 mb-4 flex-row-reverse justify-end">
                 <Star className="w-5 h-5 fill-yellow-400 text-yellow-400 flex-shrink-0" />
                 <span className="text-lg font-semibold">{provider.rating.toFixed(1)}</span>
-                <span className="text-gray-500">({provider.totalReviews} {t('provider.reviews')})</span>
+                <span className="text-gray-500">({provider.totalReviews} تقييمات)</span>
               </div>
 
               {/* Experience */}
               {provider.experience && (
-                <div className={`flex items-center gap-2 text-gray-600 mb-4 ${isRTL ? 'flex-row-reverse justify-end' : 'flex-row'}`}>
+                <div className="flex items-center gap-2 text-gray-600 mb-4 flex-row-reverse justify-end">
                   <Clock className="w-5 h-5 flex-shrink-0" />
-                  <span>{provider.experience} {t('provider.experience')}</span>
+                  <span>{provider.experience} سنوات الخبرة</span>
                 </div>
               )}
 
               {/* Emergency Badge */}
               {provider.emergencyAvailable && (
-                <div className={`inline-flex items-center gap-2 bg-red-50 text-red-700 px-3 py-1 rounded-full text-sm font-semibold mb-4 ${isRTL ? 'flex-row-reverse ml-auto' : 'flex-row'}`}>
+                <div className="inline-flex items-center gap-2 bg-red-50 text-red-700 px-3 py-1 rounded-full text-sm font-semibold mb-4 flex-row-reverse ml-auto">
                   <AlertCircle className="w-4 h-4" />
-                  {t('provider.emergencyAvailable')}
+                  متاح للطوارئ
                 </div>
               )}
 
               {/* CTAs */}
-              <div className={`flex gap-3 mt-6 flex-wrap ${isRTL ? 'flex-row-reverse justify-end' : 'flex-row'}`}>
+              <div className="flex gap-3 mt-6 flex-wrap flex-row-reverse justify-end">
                 <button
                   onClick={() => handleBook('standard')}
                   className="px-4 sm:px-6 py-2 sm:py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors text-sm sm:text-base"
                 >
-                  {t('provider.bookAppointment')}
+                  احجز موعد
                 </button>
                 {provider.emergencyAvailable && (
                   <button
                     onClick={() => handleBook('emergency')}
-                    className={`px-4 sm:px-6 py-2 sm:py-3 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition-colors flex items-center gap-2 text-sm sm:text-base ${isRTL ? 'flex-row-reverse' : ''}`}
+                    className="px-4 sm:px-6 py-2 sm:py-3 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition-colors flex items-center gap-2 text-sm sm:text-base flex-row-reverse"
                   >
                     <AlertCircle className="w-4 sm:w-5 h-4 sm:h-5" />
-                    {t('provider.emergencyBooking')}
+                    حجز طوارئ
                   </button>
                 )}
               </div>
@@ -243,38 +235,38 @@ export default function ProviderProfile({ provider }: ProviderProfileProps) {
         </div>
       </div>
 
-      <div className={`max-w-4xl mx-auto px-4 py-6 space-y-6 ${isRTL ? 'text-right' : 'text-left'}`} dir={isRTL ? 'rtl' : 'ltr'}>
+      <div className="max-w-4xl mx-auto px-4 py-6 space-y-6 text-right" dir="rtl">
         {/* Bio */}
         {provider.bio && (
           <div className="bg-white rounded-xl shadow-sm p-6">
-            <h2 className={`text-xl font-bold mb-4 ${isRTL ? 'text-right' : 'text-left'}`}>{t('provider.bio')}</h2>
-            <p className={`text-gray-700 leading-relaxed ${isRTL ? 'text-right' : 'text-left'}`}>{provider.bio}</p>
+            <h2 className="text-xl font-bold mb-4 text-right">نبذة</h2>
+            <p className="text-gray-700 leading-relaxed text-right">{provider.bio}</p>
           </div>
         )}
 
         {/* Services */}
         <div className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className={`text-xl font-bold mb-4 ${isRTL ? 'text-right' : 'text-left'}`}>{t('provider.services')} & {t('home.price')}</h2>
+          <h2 className="text-xl font-bold mb-4 text-right">الخدمات & السعر</h2>
           <div className="space-y-3">
             {provider.services.map((service) => (
               <div
                 key={service.id}
-                className={`flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-blue-500 transition-colors ${isRTL ? 'flex-row-reverse' : ''}`}
+                className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-blue-500 transition-colors flex-row-reverse"
               >
-                <div className={isRTL ? 'text-right' : 'text-left'}>
+                <div className="text-right">
                   <h3 className="font-semibold text-gray-900">{service.name}</h3>
                   {service.description && (
                     <p className="text-sm text-gray-600 mt-1">{service.description}</p>
                   )}
-                  <div className={`flex items-center gap-4 mt-2 text-sm text-gray-500 ${isRTL ? 'flex-row-reverse' : ''}`}>
-                    <span className={`flex items-center gap-1 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                  <div className="flex items-center gap-4 mt-2 text-sm text-gray-500 flex-row-reverse">
+                    <span className="flex items-center gap-1 flex-row-reverse">
                       <Clock className="w-4 h-4" />
-                      {service.duration} {t('common.minutes')}
+                      {service.duration} دقيقة
                     </span>
                   </div>
                 </div>
-                <div className={isRTL ? 'text-left' : 'text-right'}>
-                  <p className="text-xl font-bold text-blue-600">{service.price} KWD</p>
+                <div className="text-left">
+                  <p className="text-xl font-bold text-blue-600">{service.price} د.ك</p>
                 </div>
               </div>
             ))}
@@ -283,19 +275,19 @@ export default function ProviderProfile({ provider }: ProviderProfileProps) {
 
         {/* Availability Calendar */}
         <div className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className={`text-xl font-bold mb-4 ${isRTL ? 'text-right' : 'text-left'}`}>{t('provider.availability')}</h2>
+          <h2 className="text-xl font-bold mb-4 text-right">التوفر</h2>
           <div className="space-y-4">
             {provider.availability.map((day) => (
-              <div key={day.date} className={`border-b border-gray-200 pb-4 last:border-0 ${isRTL ? 'text-right' : 'text-left'}`}>
+              <div key={day.date} className="border-b border-gray-200 pb-4 last:border-0 text-right">
                 <h3 className="font-semibold mb-2">
-                  {new Date(day.date).toLocaleDateString(locale === 'ar' ? 'ar-KW' : 'en-US', {
+                  {new Date(day.date).toLocaleDateString('ar-KW', {
                     weekday: 'long',
                     month: 'short',
                     day: 'numeric',
                   })}
                 </h3>
                 {day.slots.length > 0 ? (
-                  <div className={`flex flex-wrap gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                  <div className="flex flex-wrap gap-2 flex-row-reverse">
                     {day.slots.map((slot) => (
                       <span
                         key={slot.id}
@@ -306,7 +298,7 @@ export default function ProviderProfile({ provider }: ProviderProfileProps) {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-gray-500 text-sm">{t('provider.noAvailableSlots') || 'No available slots'}</p>
+                  <p className="text-gray-500 text-sm">لا توجد مواعيد متاحة</p>
                 )}
               </div>
             ))}
@@ -315,15 +307,15 @@ export default function ProviderProfile({ provider }: ProviderProfileProps) {
 
         {/* Reviews */}
         <div className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className={`text-xl font-bold mb-4 flex items-center gap-2 ${isRTL ? 'flex-row-reverse text-right' : 'text-left'}`}>
+          <h2 className="text-xl font-bold mb-4 flex items-center gap-2 flex-row-reverse text-right">
             <MessageSquare className="w-6 h-6" />
-            {t('provider.reviews')} ({provider.totalReviews})
+            تقييمات ({provider.totalReviews})
           </h2>
           {provider.reviews.length > 0 ? (
             <div className="space-y-4">
               {provider.reviews.map((review) => (
-                <div key={review.id} className={`border-b border-gray-200 pb-4 last:border-0 ${isRTL ? 'text-right' : 'text-left'}`}>
-                  <div className={`flex items-center gap-2 mb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                <div key={review.id} className="border-b border-gray-200 pb-4 last:border-0 text-right">
+                  <div className="flex items-center gap-2 mb-2 flex-row-reverse">
                     {[...Array(5)].map((_, i) => (
                       <Star
                         key={i}
@@ -335,7 +327,7 @@ export default function ProviderProfile({ provider }: ProviderProfileProps) {
                       />
                     ))}
                     <span className="text-sm text-gray-500">
-                      {new Date(review.createdAt).toLocaleDateString(locale === 'ar' ? 'ar-KW' : 'en-US')}
+                      {new Date(review.createdAt).toLocaleDateString('ar-KW')}
                     </span>
                   </div>
                   {review.comment && (
@@ -345,14 +337,14 @@ export default function ProviderProfile({ provider }: ProviderProfileProps) {
               ))}
             </div>
           ) : (
-            <p className={`text-gray-500 ${isRTL ? 'text-right' : 'text-left'}`}>{t('provider.noReviews') || 'No reviews yet'}</p>
+            <p className="text-gray-500 text-right">لا توجد تقييمات بعد</p>
           )}
         </div>
 
         {/* Gallery */}
         {provider.gallery && provider.gallery.length > 0 && (
           <div className="bg-white rounded-xl shadow-sm p-6">
-            <h2 className={`text-xl font-bold mb-4 ${isRTL ? 'text-right' : 'text-left'}`}>{t('provider.gallery')}</h2>
+            <h2 className="text-xl font-bold mb-4 text-right">معرض الصور</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {provider.gallery.map((photo, index) => (
                 <div
@@ -361,7 +353,7 @@ export default function ProviderProfile({ provider }: ProviderProfileProps) {
                 >
                   <img
                     src={photo}
-                    alt={`${t('provider.gallery')} ${index + 1}`}
+                    alt={`معرض الصور ${index + 1}`}
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -373,12 +365,12 @@ export default function ProviderProfile({ provider }: ProviderProfileProps) {
 
       {/* Auth Modal */}
       {showAuthModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" dir={isRTL ? 'rtl' : 'ltr'}>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" dir="rtl">
           <div className="bg-white rounded-2xl max-w-md w-full">
             <div className="p-6">
-              <h2 className={`text-2xl font-bold mb-4 ${isRTL ? 'text-right' : 'text-left'}`}>{t('auth.loginRequired') || t('auth.login')}</h2>
-              <p className={`text-gray-600 mb-6 ${isRTL ? 'text-right' : 'text-left'}`}>
-                {t('auth.verifyPhoneToBook') || t('booking.authenticationRequired')}
+              <h2 className="text-2xl font-bold mb-4 text-right">تسجيل الدخول مطلوب</h2>
+              <p className="text-gray-600 mb-6 text-right">
+                يرجى التحقق من رقم هاتفك لحجز موعد
               </p>
               <PhoneAuth 
                 onSuccess={handleAuthSuccess} 
@@ -386,9 +378,9 @@ export default function ProviderProfile({ provider }: ProviderProfileProps) {
               />
               <button
                 onClick={() => setShowAuthModal(false)}
-                className={`mt-4 w-full text-gray-600 hover:text-gray-900 text-sm ${isRTL ? 'text-right' : 'text-left'}`}
+                className="mt-4 w-full text-gray-600 hover:text-gray-900 text-sm text-right"
               >
-                {t('common.cancel')}
+                إلغاء
               </button>
             </div>
           </div>

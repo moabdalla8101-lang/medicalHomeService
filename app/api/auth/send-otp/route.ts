@@ -37,14 +37,31 @@ export async function POST(request: NextRequest) {
       });
     }
     
-    // Return OTP for testing (since this is a mock SMS system)
-    // In production with real SMS, remove this
-    return NextResponse.json({
+    // Check if WhatsApp is configured
+    let whatsappEnabled = false;
+    try {
+      const { isWhatsAppConfigured } = await import('@/lib/whatsapp');
+      whatsappEnabled = isWhatsAppConfigured();
+    } catch (error) {
+      // WhatsApp module not available or error
+      console.warn('[OTP] Could not check WhatsApp configuration');
+    }
+    
+    // Return response
+    // In development, include OTP for testing
+    // In production with WhatsApp, OTP is sent via WhatsApp and not returned
+    const response: any = {
       success: true,
-      message: 'OTP sent successfully',
+      message: whatsappEnabled ? 'تم إرسال رمز التحقق عبر واتساب' : 'OTP sent successfully',
       normalizedPhone, // Always return normalized phone so client can use it
-      otp, // Always return OTP for testing (mock SMS system)
-    });
+    };
+    
+    // Only return OTP in development mode or if WhatsApp is not configured
+    if (process.env.NODE_ENV === 'development' || !whatsappEnabled) {
+      response.otp = otp; // Include OTP for testing
+    }
+    
+    return NextResponse.json(response);
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(

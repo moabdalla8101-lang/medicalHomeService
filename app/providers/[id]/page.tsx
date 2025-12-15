@@ -21,7 +21,7 @@ export default function ProviderPage() {
         const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(data.error || 'Failed to fetch provider');
+          throw new Error(data.error || 'حدث خطأ في جلب بيانات مقدم الخدمة');
         }
 
         setProvider(data.provider);
@@ -39,19 +39,22 @@ export default function ProviderPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <LoadingSpinner />
+      <div className="min-h-screen flex items-center justify-center" dir="rtl">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">جاري التحميل...</p>
+        </div>
       </div>
     );
   }
 
   if (error || !provider) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" dir="rtl">
         <div className="text-center">
-          <p className="text-red-600 mb-4">{error || 'Provider not found'}</p>
+          <p className="text-red-600 mb-4">{error || 'مقدم الخدمة غير موجود'}</p>
           <a href="/" className="text-blue-600 hover:underline">
-            Go back to home
+            العودة للصفحة الرئيسية
           </a>
         </div>
       </div>
@@ -60,4 +63,3 @@ export default function ProviderPage() {
 
   return <ProviderProfile provider={provider} />;
 }
-

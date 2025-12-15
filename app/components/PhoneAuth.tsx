@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useTranslations, useLocale } from 'next-intl';
 import { Phone, Loader2, CheckCircle2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -12,9 +11,6 @@ interface PhoneAuthProps {
 }
 
 export default function PhoneAuth({ onSuccess, onAuthSuccess, role = 'user' }: PhoneAuthProps) {
-  const t = useTranslations();
-  const locale = useLocale();
-  const isRTL = locale === 'ar';
   const handleSuccess = onAuthSuccess || onSuccess;
   const [phone, setPhone] = useState('');
   const [normalizedPhone, setNormalizedPhone] = useState('');
@@ -24,10 +20,10 @@ export default function PhoneAuth({ onSuccess, onAuthSuccess, role = 'user' }: P
 
   const handleSendOTP = async () => {
     if (!phone.trim()) {
-      toast.error(t('auth.enterPhone'), {
+      toast.error('أدخل رقم هاتفك', {
         style: {
-          direction: isRTL ? 'rtl' : 'ltr',
-          textAlign: isRTL ? 'right' : 'left',
+          direction: 'rtl',
+          textAlign: 'right',
         }
       });
       return;
@@ -55,40 +51,40 @@ export default function PhoneAuth({ onSuccess, onAuthSuccess, role = 'user' }: P
         console.log('OTP:', data.otp);
         console.log('Normalized phone:', data.normalizedPhone || phone);
         // Show OTP toast with longer duration, then show success message
-        toast.success(`${t('auth.yourOTP') || 'Your OTP'}: ${data.otp}`, { 
+        toast.success(`رمز التحقق الخاص بك: ${data.otp}`, { 
           duration: 20000,
           style: {
             fontSize: '16px',
             fontWeight: 'bold',
-            direction: isRTL ? 'rtl' : 'ltr',
-            textAlign: isRTL ? 'right' : 'left',
+            direction: 'rtl',
+            textAlign: 'right',
           }
         });
         // Also show a brief success message
         setTimeout(() => {
-          toast.success(t('auth.otpSent'), { 
+          toast.success('تم إرسال رمز التحقق', { 
             duration: 3000,
             style: {
-              direction: isRTL ? 'rtl' : 'ltr',
-              textAlign: isRTL ? 'right' : 'left',
+              direction: 'rtl',
+              textAlign: 'right',
             }
           });
         }, 500);
       } else {
-        toast.success(t('auth.otpSent'), { 
+        toast.success('تم إرسال رمز التحقق', { 
           duration: 3000,
           style: {
-            direction: isRTL ? 'rtl' : 'ltr',
-            textAlign: isRTL ? 'right' : 'left',
+            direction: 'rtl',
+            textAlign: 'right',
           }
         });
       }
       setStep('otp');
     } catch (error: any) {
-      toast.error(error.message || t('auth.failedToSendOTP'), {
+      toast.error(error.message || 'فشل إرسال رمز التحقق', {
         style: {
-          direction: isRTL ? 'rtl' : 'ltr',
-          textAlign: isRTL ? 'right' : 'left',
+          direction: 'rtl',
+          textAlign: 'right',
         }
       });
     } finally {
@@ -100,10 +96,10 @@ export default function PhoneAuth({ onSuccess, onAuthSuccess, role = 'user' }: P
     // Clean and validate OTP
     const cleanOtp = otp.trim().replace(/\D/g, ''); // Remove non-digits
     if (!cleanOtp || cleanOtp.length !== 6) {
-      toast.error(t('auth.enterValidOTP'), {
+      toast.error('أدخل رمز التحقق الصحيح', {
         style: {
-          direction: isRTL ? 'rtl' : 'ltr',
-          textAlign: isRTL ? 'right' : 'left',
+          direction: 'rtl',
+          textAlign: 'right',
         }
       });
       return;
@@ -115,10 +111,10 @@ export default function PhoneAuth({ onSuccess, onAuthSuccess, role = 'user' }: P
       const phoneToVerify = normalizedPhone || phone;
       
       if (!phoneToVerify) {
-        toast.error(t('auth.phoneMissing'), {
+        toast.error('رقم الهاتف مفقود. يرجى البدء من جديد.', {
           style: {
-            direction: isRTL ? 'rtl' : 'ltr',
-            textAlign: isRTL ? 'right' : 'left',
+            direction: 'rtl',
+            textAlign: 'right',
           }
         });
         return;
@@ -144,23 +140,23 @@ export default function PhoneAuth({ onSuccess, onAuthSuccess, role = 'user' }: P
       console.log('Response data:', data);
 
       if (!response.ok) {
-        throw new Error(data.error || t('auth.invalidOTP'));
+        throw new Error(data.error || 'رمز التحقق غير صحيح');
       }
 
-      toast.success(t('auth.loginSuccess'), {
+      toast.success('تم تسجيل الدخول بنجاح', {
         style: {
-          direction: isRTL ? 'rtl' : 'ltr',
-          textAlign: isRTL ? 'right' : 'left',
+          direction: 'rtl',
+          textAlign: 'right',
         }
       });
       if (handleSuccess) {
         handleSuccess(data.token, data.user);
       }
     } catch (error: any) {
-      toast.error(error.message || t('auth.invalidOTP'), {
+      toast.error(error.message || 'رمز التحقق غير صحيح', {
         style: {
-          direction: isRTL ? 'rtl' : 'ltr',
-          textAlign: isRTL ? 'right' : 'left',
+          direction: 'rtl',
+          textAlign: 'right',
         }
       });
     } finally {
@@ -169,29 +165,29 @@ export default function PhoneAuth({ onSuccess, onAuthSuccess, role = 'user' }: P
   };
 
   return (
-    <div className={`w-full max-w-md mx-auto bg-white rounded-2xl shadow-xl p-8 ${isRTL ? 'text-right' : 'text-left'}`} dir={isRTL ? 'rtl' : 'ltr'}>
+    <div className="w-full max-w-md mx-auto bg-white rounded-2xl shadow-xl p-8 text-right" dir="rtl">
       <div className="text-center mb-8">
         <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
           <Phone className="w-8 h-8 text-blue-600" />
         </div>
         <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          {step === 'phone' ? t('auth.enterPhone') : t('auth.enterOTP')}
+          {step === 'phone' ? 'أدخل رقم هاتفك' : 'أدخل رمز التحقق'}
         </h2>
         <p className="text-gray-600">
           {step === 'phone'
-            ? t('auth.otpSentMessage') || "We'll send you a verification code"
-            : t('auth.enterOTPMessage') || 'Enter the 6-digit code sent to your phone'}
+            ? "سنرسل لك رمز التحقق"
+            : 'أدخل الرمز المكون من 6 أرقام المرسل إلى هاتفك'}
         </p>
       </div>
 
       {step === 'phone' ? (
         <div className="space-y-4">
           <div>
-            <label className={`block text-sm font-medium text-gray-700 mb-2 ${isRTL ? 'text-right' : 'text-left'}`}>
-              {t('auth.phoneNumber')} ({t('auth.kuwait') || 'Kuwait'})
+            <label className="block text-sm font-medium text-gray-700 mb-2 text-right">
+              رقم الهاتف (الكويت)
             </label>
-            <div className={`flex ${isRTL ? 'flex-row-reverse' : ''}`}>
-              <span className={`inline-flex items-center px-3 ${isRTL ? 'rounded-r-lg border-l-0 border-r' : 'rounded-l-lg border-r-0'} border border-gray-300 bg-gray-50 text-gray-500 text-sm font-medium`}>
+            <div className="flex flex-row-reverse">
+              <span className="inline-flex items-center px-3 rounded-r-lg border-l-0 border-r border border-gray-300 bg-gray-50 text-gray-500 text-sm font-medium">
                 +965
               </span>
               <input
@@ -199,36 +195,36 @@ export default function PhoneAuth({ onSuccess, onAuthSuccess, role = 'user' }: P
                 value={phone}
                 onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 8))}
                 placeholder="XXXXXXXX"
-                className={`flex-1 px-4 py-3 border border-gray-300 ${isRTL ? 'rounded-l-lg border-r-0' : 'rounded-r-lg border-l-0'} focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-left`}
+                className="flex-1 px-4 py-3 border border-gray-300 rounded-l-lg border-r-0 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-left"
                 maxLength={8}
                 dir="ltr"
               />
             </div>
-            <p className={`mt-1 text-xs text-gray-500 ${isRTL ? 'text-right' : 'text-left'}`}>
-              {t('auth.phoneNumberHint') || 'Enter your 8-digit Kuwait phone number'}
+            <p className="mt-1 text-xs text-gray-500 text-right">
+              أدخل رقم هاتفك الكويتي المكون من 8 أرقام
             </p>
           </div>
 
           <button
             onClick={handleSendOTP}
             disabled={loading || phone.length !== 8}
-            className={`w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}
+            className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2 flex-row-reverse"
           >
             {loading ? (
               <>
                 <Loader2 className="w-5 h-5 animate-spin" />
-                {t('auth.sending') || 'Sending...'}
+                جاري الإرسال...
               </>
             ) : (
-              t('auth.sendOTP')
+              'إرسال رمز التحقق'
             )}
           </button>
         </div>
       ) : (
         <div className="space-y-4">
           <div>
-            <label className={`block text-sm font-medium text-gray-700 mb-2 ${isRTL ? 'text-right' : 'text-left'}`}>
-              {t('auth.otp')}
+            <label className="block text-sm font-medium text-gray-700 mb-2 text-right">
+              رمز التحقق
             </label>
             <input
               type="text"
@@ -243,17 +239,17 @@ export default function PhoneAuth({ onSuccess, onAuthSuccess, role = 'user' }: P
           <button
             onClick={handleVerifyOTP}
             disabled={loading || otp.length !== 6}
-            className={`w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}
+            className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2 flex-row-reverse"
           >
             {loading ? (
               <>
                 <Loader2 className="w-5 h-5 animate-spin" />
-                {t('auth.verifying') || 'Verifying...'}
+                جاري التحقق...
               </>
             ) : (
               <>
                 <CheckCircle2 className="w-5 h-5" />
-                {t('auth.verify')} & {t('auth.login')}
+                تحقق & تسجيل الدخول
               </>
             )}
           </button>
@@ -263,9 +259,9 @@ export default function PhoneAuth({ onSuccess, onAuthSuccess, role = 'user' }: P
               setStep('phone');
               setOtp('');
             }}
-            className={`w-full text-gray-600 py-2 text-sm hover:text-gray-900 ${isRTL ? 'text-right' : 'text-left'}`}
+            className="w-full text-gray-600 py-2 text-sm hover:text-gray-900 text-right"
           >
-            {t('auth.changePhoneNumber') || 'Change phone number'}
+            تغيير رقم الهاتف
           </button>
         </div>
       )}

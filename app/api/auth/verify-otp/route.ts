@@ -2,13 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifyOTPAndAuthenticate, normalizePhone } from '@/lib/auth';
 import { z } from 'zod';
 
-// Force dynamic rendering
-export const dynamic = 'force-dynamic';
-
 const verifyOTPSchema = z.object({
   phone: z.string().min(1, 'Phone number is required'),
   otp: z.string().length(6, 'OTP must be 6 digits'),
-  role: z.enum(['user', 'provider', 'admin', 'medical_centre']).optional(),
+  role: z.enum(['user', 'provider']).optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -38,12 +35,9 @@ export async function POST(request: NextRequest) {
     
     const normalizedPhone = normalizePhone(phone);
     
-    // Always log role info for debugging (even in production for this demo)
-    console.log('[VERIFY-OTP] Authenticating:', { 
-      normalizedPhone, 
-      role: role || 'not provided',
-      willSetRole: role || 'default (user)'
-    });
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[VERIFY-OTP] After normalization:', { originalPhone: phone, normalizedPhone, otp, role });
+    }
     
     const result = await verifyOTPAndAuthenticate(normalizedPhone, otp, role);
     
