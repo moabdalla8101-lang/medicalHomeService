@@ -67,3 +67,4 @@ Please share:
 2. The **exact connection string** from Supabase dashboard (URI tab)
 3. Any error messages you see in Supabase dashboard
 
+

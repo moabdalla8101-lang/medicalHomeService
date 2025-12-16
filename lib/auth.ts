@@ -13,8 +13,11 @@ export interface AuthTokenPayload {
 }
 
 // Generate OTP (6 digits)
+// TEMPORARY: Hardcoded to '123456' for testing until WhatsApp API is ready
 export function generateOTP(): string {
-  return Math.floor(100000 + Math.random() * 900000).toString();
+  // TODO: Remove hardcoded OTP when WhatsApp API is working
+  // return Math.floor(100000 + Math.random() * 900000).toString();
+  return '123456';
 }
 
 // Send OTP via WhatsApp or fallback to mock

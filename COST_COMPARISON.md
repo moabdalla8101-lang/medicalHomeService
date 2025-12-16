@@ -86,3 +86,4 @@ For 1000 contracts/month:
 - GPT-4o: ~$100-300/month
 - Tesseract.js: FREE
 
+

@@ -171,3 +171,4 @@ Make sure to add `DATABASE_URL` to your deployment environment variables.
 
 **Your app is ready! Just set up the database and run migrations.** 🚀
 
+

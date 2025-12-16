@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { sendOTP, isValidKuwaitPhone, normalizePhone } from '@/lib/auth';
+import { sendOTP, isValidKuwaitPhone, normalizePhone, generateOTP } from '@/lib/auth';
 import { z } from 'zod';
 
 // Force dynamic rendering
@@ -24,8 +24,8 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // Generate and send OTP
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    // Generate and send OTP (currently hardcoded to '123456' for testing)
+    const otp = generateOTP();
     await sendOTP(normalizedPhone, otp);
     
     // Debug logging

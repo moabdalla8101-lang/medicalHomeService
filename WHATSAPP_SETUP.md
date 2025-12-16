@@ -131,3 +131,4 @@ The app automatically converts Kuwait phone numbers to WhatsApp format:
 - **Use environment variables** in Vercel, not hardcoded values
 - In production, OTP is **never returned** in API responses when WhatsApp is enabled
 
+

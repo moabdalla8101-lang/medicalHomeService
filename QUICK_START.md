@@ -141,3 +141,4 @@ NODE_ENV="development"
 - Configure payment gateway (KNET)
 - Deploy to production (Vercel, Railway, etc.)
 
+

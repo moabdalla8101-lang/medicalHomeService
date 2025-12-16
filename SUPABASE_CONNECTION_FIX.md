@@ -56,3 +56,4 @@ Your `.env` file is configured with:
 3. Run migrations: `npx prisma migrate dev --name init`
 4. Start the app: `npm run dev`
 
+
