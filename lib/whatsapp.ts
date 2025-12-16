@@ -1,117 +1,94 @@
 /**
- * WhatsApp Cloud API Integration
- * Sends OTP messages via Meta's WhatsApp Cloud API
+ * Twilio WhatsApp API Integration
+ * Sends OTP messages via Twilio's WhatsApp API
  */
 
-interface WhatsAppMessageResponse {
-  messaging_product: string;
-  contacts: Array<{
-    input: string;
-    wa_id: string;
-  }>;
-  messages: Array<{
-    id: string;
-  }>;
+interface TwilioMessageResponse {
+  sid: string;
+  status: string;
+  to: string;
+  from: string;
+  body?: string;
+  error_code?: string;
+  error_message?: string;
 }
 
-interface WhatsAppErrorResponse {
-  error: {
-    message: string;
-    type: string;
-    code: number;
-    error_subcode?: number;
-    fbtrace_id?: string;
-  };
-}
-
-const WHATSAPP_API_VERSION = process.env.WHATSAPP_API_VERSION || 'v22.0';
-const WHATSAPP_PHONE_NUMBER_ID = process.env.WHATSAPP_PHONE_NUMBER_ID || '886251584573678';
-const WHATSAPP_ACCESS_TOKEN = process.env.WHATSAPP_ACCESS_TOKEN;
-const WHATSAPP_API_URL = `https://graph.facebook.com/${WHATSAPP_API_VERSION}/${WHATSAPP_PHONE_NUMBER_ID}/messages`;
+const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID;
+const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN;
+const TWILIO_WHATSAPP_FROM = process.env.TWILIO_WHATSAPP_FROM;
+const TWILIO_CONTENT_SID = process.env.TWILIO_CONTENT_SID;
+const TWILIO_API_URL = `https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json`;
 
 /**
- * Send OTP via WhatsApp using template message
+ * Send OTP via Twilio WhatsApp using Content Template
  */
 export async function sendOTPViaWhatsApp(
   phoneNumber: string,
   otpCode: string
 ): Promise<boolean> {
-  if (!WHATSAPP_ACCESS_TOKEN) {
-    console.error('[WHATSAPP] Access token not configured');
+  if (!TWILIO_AUTH_TOKEN || !TWILIO_ACCOUNT_SID || !TWILIO_WHATSAPP_FROM || !TWILIO_CONTENT_SID) {
+    console.error('[TWILIO] Twilio configuration incomplete');
     return false;
   }
 
-  // Convert phone to WhatsApp format (remove + if present, ensure it's just digits with country code)
-  const whatsappPhone = phoneNumber.startsWith('+') 
-    ? phoneNumber.substring(1) 
-    : phoneNumber;
+  // Convert phone to WhatsApp format (ensure it starts with whatsapp:)
+  let whatsappPhone = phoneNumber;
+  if (!whatsappPhone.startsWith('whatsapp:')) {
+    // Ensure phone has + prefix
+    if (!whatsappPhone.startsWith('+')) {
+      whatsappPhone = '+' + whatsappPhone;
+    }
+    whatsappPhone = 'whatsapp:' + whatsappPhone;
+  }
 
   try {
-    // Option 1: Use template message (if you have an approved template)
-    const templateName = process.env.WHATSAPP_OTP_TEMPLATE_NAME || 'jaspers_market_plain_text_v1';
-    const languageCode = process.env.WHATSAPP_TEMPLATE_LANGUAGE || 'ar'; // Arabic
+    // Create Basic Auth header (Account SID:Auth Token)
+    const credentials = Buffer.from(`${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}`).toString('base64');
 
-    const response = await fetch(WHATSAPP_API_URL, {
+    // Prepare ContentVariables - adjust parameter name based on your template
+    // If your template uses {{1}} for OTP, use "1" as the key
+    const contentVariables = JSON.stringify({
+      "1": otpCode, // Adjust this if your template uses different parameter names
+    });
+
+    // Create form data
+    const formData = new URLSearchParams();
+    formData.append('To', whatsappPhone);
+    formData.append('From', TWILIO_WHATSAPP_FROM);
+    formData.append('ContentSid', TWILIO_CONTENT_SID);
+    formData.append('ContentVariables', contentVariables);
+
+    const response = await fetch(TWILIO_API_URL, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${WHATSAPP_ACCESS_TOKEN}`,
-        'Content-Type': 'application/json',
+        'Authorization': `Basic ${credentials}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
       },
-      body: JSON.stringify({
-        messaging_product: 'whatsapp',
-        to: whatsappPhone,
-        type: 'template',
-        template: {
-          name: templateName,
-          language: {
-            code: languageCode,
-          },
-          // Include OTP as template parameter
-          // Adjust this based on your template structure
-          components: [
-            {
-              type: 'body',
-              parameters: [
-                {
-                  type: 'text',
-                  text: otpCode,
-                },
-              ],
-            },
-          ],
-        },
-      }),
+      body: formData.toString(),
     });
 
     const data = await response.json();
 
     if (!response.ok) {
-      const error = data as WhatsAppErrorResponse;
-      console.error('[WHATSAPP] Error sending message:', {
-        error: error.error?.message || 'Unknown error',
-        code: error.error?.code,
-        type: error.error?.type,
+      console.error('[TWILIO] Error sending message:', {
+        error: data.message || 'Unknown error',
+        code: data.code,
+        status: data.status,
         phone: whatsappPhone,
       });
-      
-      // If template doesn't exist or has wrong parameters, try text message
-      if (error.error?.code === 132000 || error.error?.code === 100) {
-        console.log('[WHATSAPP] Template error, trying text message instead...');
-        return await sendOTPViaWhatsAppText(phoneNumber, otpCode);
-      }
-      
       return false;
     }
 
-    const result = data as WhatsAppMessageResponse;
-    console.log('[WHATSAPP] Message sent successfully:', {
-      messageId: result.messages?.[0]?.id,
+    const result = data as TwilioMessageResponse;
+    console.log('[TWILIO] Message sent successfully:', {
+      messageSid: result.sid,
+      status: result.status,
       phone: whatsappPhone,
     });
 
     return true;
   } catch (error: any) {
-    console.error('[WHATSAPP] Exception sending message:', {
+    console.error('[TWILIO] Exception sending message:', {
       error: error.message,
       phone: whatsappPhone,
     });
@@ -120,65 +97,13 @@ export async function sendOTPViaWhatsApp(
 }
 
 /**
- * Send OTP via WhatsApp using simple text message (fallback)
- * Note: This requires the recipient to have messaged you first (24-hour window)
- * For production, use approved templates instead
- */
-async function sendOTPViaWhatsAppText(
-  phoneNumber: string,
-  otpCode: string
-): Promise<boolean> {
-  if (!WHATSAPP_ACCESS_TOKEN) {
-    return false;
-  }
-
-  const whatsappPhone = phoneNumber.startsWith('+') 
-    ? phoneNumber.substring(1) 
-    : phoneNumber;
-
-  try {
-    const response = await fetch(WHATSAPP_API_URL, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${WHATSAPP_ACCESS_TOKEN}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        messaging_product: 'whatsapp',
-        to: whatsappPhone,
-        type: 'text',
-        text: {
-          body: `رمز التحقق الخاص بك هو: ${otpCode}\n\nYour verification code is: ${otpCode}`,
-        },
-      }),
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      const error = data as WhatsAppErrorResponse;
-      console.error('[WHATSAPP] Error sending text message:', {
-        error: error.error?.message || 'Unknown error',
-        code: error.error?.code,
-        phone: whatsappPhone,
-      });
-      return false;
-    }
-
-    console.log('[WHATSAPP] Text message sent successfully');
-    return true;
-  } catch (error: any) {
-    console.error('[WHATSAPP] Exception sending text message:', error.message);
-    return false;
-  }
-}
-
-/**
- * Verify if WhatsApp is properly configured
+ * Verify if Twilio WhatsApp is properly configured
  */
 export function isWhatsAppConfigured(): boolean {
   return !!(
-    WHATSAPP_ACCESS_TOKEN &&
-    WHATSAPP_PHONE_NUMBER_ID
+    TWILIO_AUTH_TOKEN &&
+    TWILIO_ACCOUNT_SID &&
+    TWILIO_WHATSAPP_FROM &&
+    TWILIO_CONTENT_SID
   );
 }

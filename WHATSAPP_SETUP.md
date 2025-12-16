@@ -1,59 +1,53 @@
-# WhatsApp OTP Integration Setup
+# Twilio WhatsApp OTP Integration Setup
 
-This app now supports sending OTP codes via Meta's WhatsApp Cloud API.
+This app now supports sending OTP codes via Twilio's WhatsApp API.
 
 ## Environment Variables
 
 Add these to your `.env.local` file (for local development) and Vercel environment variables (for production):
 
 ```env
-# WhatsApp Cloud API Configuration
-WHATSAPP_ACCESS_TOKEN="your-access-token-here"
-WHATSAPP_PHONE_NUMBER_ID="886251584573678"
-WHATSAPP_API_VERSION="v22.0"
-WHATSAPP_OTP_TEMPLATE_NAME="jaspers_market_plain_text_v1"
-WHATSAPP_TEMPLATE_LANGUAGE="ar"
+# Twilio WhatsApp API Configuration
+TWILIO_ACCOUNT_SID="your-account-sid-here"
+TWILIO_AUTH_TOKEN="your-auth-token-here"
+TWILIO_WHATSAPP_FROM="whatsapp:+14155238886"
+TWILIO_CONTENT_SID="your-content-sid-here"
 ```
 
-## Current Configuration
+## Configuration
 
-Based on your curl example:
-- **Phone Number ID**: `886251584573678`
-- **API Version**: `v22.0`
-- **Template Name**: `jaspers_market_plain_text_v1`
-- **Language**: Currently set to `ar` (Arabic) - change if your template uses different language
+Based on your curl example, you'll need:
+- **Account SID**: Your Twilio Account SID (starts with `AC`)
+- **From Number**: `whatsapp:+14155238886` (Twilio Sandbox) or your production WhatsApp number
+- **Content SID**: Your approved Content Template SID (starts with `HX`)
 
-## Template Requirements
+## Content Template Requirements
 
-Your WhatsApp template should:
-1. Be approved by Meta
-2. Support OTP parameter (if using parameterized template)
-3. Be in the language specified by `WHATSAPP_TEMPLATE_LANGUAGE`
+Your Twilio Content Template should:
+1. Be approved in Twilio Console
+2. Support OTP parameter (typically `{{1}}` for the first parameter)
+3. Be configured for WhatsApp messaging
 
 ### Template Parameters
 
-If your template accepts the OTP as a parameter, the code will automatically include it in the `components.body.parameters` array.
+The code sends the OTP as parameter `"1"` in ContentVariables. If your template uses a different parameter name, update `lib/whatsapp.ts`:
+
+```typescript
+const contentVariables = JSON.stringify({
+  "1": otpCode, // Change "1" to match your template parameter
+});
+```
 
 Example template structure:
 ```
-Template Name: jaspers_market_plain_text_v1
+Content Template: [Your Content SID]
 Body: "Your verification code is {{1}}"
 ```
 
 The code will send:
 ```json
 {
-  "components": [
-    {
-      "type": "body",
-      "parameters": [
-        {
-          "type": "text",
-          "text": "123456"
-        }
-      ]
-    }
-  ]
+  "ContentVariables": "{\"1\":\"123456\"}"
 }
 ```
 
@@ -61,11 +55,10 @@ The code will send:
 
 1. **Set environment variables** in `.env.local`:
    ```env
-   WHATSAPP_ACCESS_TOKEN="EAAhJYC1el0oBQBZBW4k2e81KZBUT1wVcAwWfsBZBPNpxZCNPdZBHyo7DF5tTUEdAQNfVD2BnntMiZAb1ZAZB1hTTaWpokq3USgc4WtKeBTTZCLOLRBNoq8aAgsaDeXzggylwL3pZCzvZAnqJKpkjQdTITZBBuMB1X64qTtp6aZCxPx7tVUtYdXhdQajvOZB5sT6fyRZARjdSwAY6cBRQmFUoYdI70M9BcO0CW9VPPLK8J1BBxLlqjYDU5TVhfpBrAJrkBy9jRy3ZBR1fvPQpsZAQ3D6yFFNuwkdYbvE54WPkZD"
-   WHATSAPP_PHONE_NUMBER_ID="886251584573678"
-   WHATSAPP_API_VERSION="v22.0"
-   WHATSAPP_OTP_TEMPLATE_NAME="jaspers_market_plain_text_v1"
-   WHATSAPP_TEMPLATE_LANGUAGE="ar"
+   TWILIO_ACCOUNT_SID="your-account-sid-here"
+   TWILIO_AUTH_TOKEN="your-auth-token-here"
+   TWILIO_WHATSAPP_FROM="whatsapp:+14155238886"
+   TWILIO_CONTENT_SID="your-content-sid-here"
    ```
 
 2. **Restart your development server**:
@@ -75,60 +68,80 @@ The code will send:
 
 3. **Test OTP sending**:
    - Go to the app
-   - Enter a Kuwait phone number (e.g., `12345678`)
-   - Check server logs for WhatsApp send status
+   - Enter a phone number (must be registered in Twilio Sandbox for testing)
+   - Check server logs for Twilio send status
    - Check the phone's WhatsApp for the message
+
+## Twilio Sandbox Setup
+
+For testing, you need to:
+1. Join the Twilio Sandbox by sending the join code to the sandbox number
+2. Add your test phone number to the sandbox
+3. Use the sandbox number (`whatsapp:+14155238886`) as the `From` number
+
+For production:
+1. Get a Twilio WhatsApp Business number
+2. Update `TWILIO_WHATSAPP_FROM` to your production number
+3. Create and approve your Content Template in Twilio Console
 
 ## Fallback Behavior
 
-- If WhatsApp is **not configured** (missing env vars): Falls back to mock mode (OTP shown in console/logs)
-- If WhatsApp **sending fails**: Falls back to mock mode
+- If Twilio is **not configured** (missing env vars): Falls back to mock mode (OTP shown in console/logs)
+- If Twilio **sending fails**: Falls back to mock mode
 - In **development mode**: Always returns OTP in API response for testing
-- In **production with WhatsApp**: OTP is NOT returned in API response (security)
+- In **production with Twilio**: OTP is NOT returned in API response (security)
 
 ## Phone Number Format
 
-The app automatically converts Kuwait phone numbers to WhatsApp format:
-- Input: `+96512345678` or `12345678`
-- WhatsApp format: `96512345678` (removes `+` prefix)
+The app automatically converts phone numbers to WhatsApp format:
+- Input: `+96512345678` or `96512345678`
+- Twilio format: `whatsapp:+96512345678` (adds `whatsapp:` prefix)
 
 ## Troubleshooting
 
-### Error: Template not found
-- Check `WHATSAPP_OTP_TEMPLATE_NAME` matches your approved template name exactly
-- Verify template is approved in Meta Business Manager
+### Error: Authentication failed
+- Verify `TWILIO_AUTH_TOKEN` is correct
+- Check `TWILIO_ACCOUNT_SID` matches your account
+- Ensure credentials are not expired
 
 ### Error: Invalid phone number
+- For Sandbox: Phone must be registered in Twilio Sandbox
+- For Production: Phone must be opted-in to receive WhatsApp messages
 - Ensure phone numbers are in international format (with country code)
-- Kuwait numbers should be `+965XXXXXXXX`
 
-### Error: Authentication failed
-- Verify `WHATSAPP_ACCESS_TOKEN` is valid and not expired
-- Check token has `whatsapp_business_messaging` permission
+### Error: Content Template not found
+- Verify `TWILIO_CONTENT_SID` matches your approved template
+- Check template is approved in Twilio Console
+- Ensure template is configured for WhatsApp
 
-### Template parameter errors
-- If your template doesn't use parameters, comment out the `components` section in `lib/whatsapp.ts`
-- If your template uses different parameter structure, adjust the `components` array
+### Error: Parameter mismatch
+- Check your Content Template parameter names
+- Update `lib/whatsapp.ts` to match your template structure
+- Verify ContentVariables JSON format is correct
 
 ## Production Deployment
 
 1. **Add environment variables in Vercel**:
    - Go to Project Settings → Environment Variables
-   - Add all `WHATSAPP_*` variables
+   - Add all `TWILIO_*` variables
    - Set for Production, Preview, and Development environments
 
 2. **Redeploy** after adding variables
 
 3. **Test in production**:
-   - Use a real phone number
+   - Use a real phone number (must be opted-in)
    - Verify WhatsApp message is received
    - Check server logs for any errors
 
 ## Security Notes
 
-- **Never commit** `.env.local` or access tokens to Git
+- **Never commit** `.env.local` or auth tokens to Git
 - **Rotate tokens** regularly
 - **Use environment variables** in Vercel, not hardcoded values
-- In production, OTP is **never returned** in API responses when WhatsApp is enabled
+- In production, OTP is **never returned** in API responses when Twilio is enabled
 
+## API Reference
 
+Twilio WhatsApp API Documentation:
+- https://www.twilio.com/docs/whatsapp/api
+- https://www.twilio.com/docs/content-api

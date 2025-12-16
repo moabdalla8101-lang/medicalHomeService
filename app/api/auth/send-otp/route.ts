@@ -37,14 +37,14 @@ export async function POST(request: NextRequest) {
       });
     }
     
-    // Check if WhatsApp is configured
+    // Check if Twilio WhatsApp is configured
     let whatsappEnabled = false;
     try {
       const { isWhatsAppConfigured } = await import('@/lib/whatsapp');
       whatsappEnabled = isWhatsAppConfigured();
     } catch (error) {
       // WhatsApp module not available or error
-      console.warn('[OTP] Could not check WhatsApp configuration');
+      console.warn('[OTP] Could not check Twilio WhatsApp configuration');
     }
     
     // Return response

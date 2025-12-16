@@ -1,7 +1,6 @@
 import { db } from './db';
 import { User, UserRole } from './types';
 import jwt from 'jsonwebtoken';
-import { sendOTPViaWhatsApp, isWhatsAppConfigured } from './whatsapp';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 const JWT_EXPIRES_IN = '7d';
@@ -20,7 +19,7 @@ export function generateOTP(): string {
   return '123456';
 }
 
-// Send OTP via WhatsApp or fallback to mock
+// Send OTP via Twilio WhatsApp or fallback to mock
 export async function sendOTP(phone: string, code: string): Promise<boolean> {
   // Store OTP with expiry (10 minutes in dev, 5 minutes in production)
   const expirySeconds = process.env.NODE_ENV === 'development' ? 600 : 300;
@@ -28,23 +27,35 @@ export async function sendOTP(phone: string, code: string): Promise<boolean> {
   
   console.log(`[AUTH] OTP stored for ${phone}: ${code} (expires in ${expirySeconds}s)`);
   
-  // Try WhatsApp if configured
-  if (isWhatsAppConfigured()) {
-    try {
-      console.log(`[AUTH] Sending OTP via WhatsApp to ${phone}`);
-      await sendOTPViaWhatsApp(phone, code);
-      console.log(`[AUTH] WhatsApp OTP sent successfully to ${phone}`);
-      return true;
-    } catch (error: any) {
-      console.error(`[AUTH] WhatsApp send failed:`, error.message);
-      // Fall through to mock/development mode
-      if (process.env.NODE_ENV === 'production') {
-        // In production, if WhatsApp fails, we should still log but not return false
-        // The OTP is already stored, so user can still verify
-        console.warn(`[AUTH] WhatsApp failed but OTP stored. User can still verify.`);
-        return true; // Return true because OTP is stored
+  // Try Twilio WhatsApp if configured
+  try {
+    const { sendOTPViaWhatsApp, isWhatsAppConfigured } = await import('./whatsapp');
+    
+    if (isWhatsAppConfigured()) {
+      try {
+        console.log(`[AUTH] Sending OTP via Twilio WhatsApp to ${phone}`);
+        const sent = await sendOTPViaWhatsApp(phone, code);
+        if (sent) {
+          console.log(`[AUTH] WhatsApp OTP sent successfully to ${phone}`);
+          return true;
+        } else {
+          console.warn(`[AUTH] WhatsApp send failed, falling back to mock for ${phone}`);
+        }
+      } catch (error: any) {
+        console.error(`[AUTH] WhatsApp send failed:`, error.message);
+        // Fall through to mock/development mode
+        if (process.env.NODE_ENV === 'production') {
+          // In production, if WhatsApp fails, we should still log but not return false
+          // The OTP is already stored, so user can still verify
+          console.warn(`[AUTH] WhatsApp failed but OTP stored. User can still verify.`);
+          return true; // Return true because OTP is stored
+        }
       }
+    } else {
+      console.log(`[AUTH] Twilio WhatsApp not configured, using mock for ${phone}`);
     }
+  } catch (error: any) {
+    console.error(`[AUTH] Error importing WhatsApp module:`, error.message);
   }
   
   // Development/mock mode - log OTP to console
