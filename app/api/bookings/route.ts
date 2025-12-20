@@ -108,19 +108,34 @@ export async function GET(request: NextRequest) {
       bookings = [];
     }
     
+    // For users, check if each booking has a review
+    const bookingsWithReviewStatus = await Promise.all(
+      bookings.map(async (b) => {
+        let hasReview = false;
+        if (user.role === 'user') {
+          const review = await db.getReviewByBookingId(b.id);
+          hasReview = !!review;
+        }
+        return {
+          id: b.id,
+          status: b.status,
+          type: b.type,
+          service: b.service.name,
+          serviceId: b.serviceId,
+          providerId: b.providerId,
+          totalPrice: b.totalPrice,
+          scheduledDate: b.scheduledDate,
+          scheduledTime: b.scheduledTime,
+          address: b.address,
+          createdAt: b.createdAt,
+          hasReview,
+        };
+      })
+    );
+    
     return NextResponse.json({
       success: true,
-      bookings: bookings.map(b => ({
-        id: b.id,
-        status: b.status,
-        type: b.type,
-        service: b.service.name,
-        totalPrice: b.totalPrice,
-        scheduledDate: b.scheduledDate,
-        scheduledTime: b.scheduledTime,
-        address: b.address,
-        createdAt: b.createdAt,
-      })),
+      bookings: bookingsWithReviewStatus,
     });
   } catch (error) {
     if (error instanceof Error) {

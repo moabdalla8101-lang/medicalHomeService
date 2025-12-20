@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     
     if (user.role !== 'user') {
       return NextResponse.json(
-        { error: 'Only users can create reviews' },
+        { error: 'المستخدمون فقط يمكنهم إنشاء التقييمات' },
         { status: 403 }
       );
     }
@@ -45,17 +45,16 @@ export async function POST(request: NextRequest) {
     
     if (booking.status !== 'completed') {
       return NextResponse.json(
-        { error: 'Can only review completed bookings' },
+        { error: 'يمكن تقييم الحجوزات المكتملة فقط' },
         { status: 400 }
       );
     }
     
-    // Check if review already exists
-    const existingReviews = await db.getProviderReviews(booking.providerId);
-    const existingReview = existingReviews.find((r: any) => r.bookingId === bookingId);
+    // Check if review already exists (including pending reviews)
+    const existingReview = await db.getReviewByBookingId(bookingId);
     if (existingReview) {
       return NextResponse.json(
-        { error: 'Review already submitted for this booking' },
+        { error: 'تم إرسال تقييم لهذه الحجز مسبقاً' },
         { status: 400 }
       );
     }

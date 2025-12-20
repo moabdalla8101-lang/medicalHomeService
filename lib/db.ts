@@ -495,6 +495,9 @@ export const db = {
     const bookings = await prisma.booking.findMany({
       where: { userId },
       orderBy: { createdAt: 'desc' },
+      include: {
+        review: true,
+      },
     });
     // Fetch services for all bookings
     const bookingsWithServices = await Promise.all(bookings.map(async (booking) => {
@@ -629,6 +632,13 @@ export const db = {
       orderBy: { createdAt: 'desc' },
     });
     return reviews.map(prismaReviewToReview);
+  },
+
+  getReviewByBookingId: async (bookingId: string): Promise<Review | undefined> => {
+    const review = await prisma.review.findUnique({
+      where: { bookingId },
+    });
+    return review ? prismaReviewToReview(review) : undefined;
   },
 
   // Payments

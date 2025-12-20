@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { X, MapPin, Calendar, Clock, DollarSign, AlertCircle, CheckCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -33,6 +34,7 @@ export default function BookingModal({
   type,
   onClose,
 }: BookingModalProps) {
+  const router = useRouter();
   const [step, setStep] = useState<'service' | 'datetime' | 'address' | 'review' | 'confirmation'>(
     type === 'emergency' ? 'address' : 'service'
   );
@@ -135,6 +137,12 @@ export default function BookingModal({
           textAlign: 'right',
         }
       });
+
+      // Redirect to user profile page after 3 seconds
+      setTimeout(() => {
+        onClose();
+        router.push('/user');
+      }, 3000);
     } catch (error: any) {
       toast.error(error.message || 'فشل إنشاء الحجز', {
         style: {
@@ -330,10 +338,13 @@ export default function BookingModal({
               )}
               <div className="text-center">
                 <button
-                  onClick={onClose}
+                  onClick={() => {
+                    onClose();
+                    router.push('/user');
+                  }}
                   className="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700"
                 >
-                  إغلاق
+                  الانتقال إلى حسابي
                 </button>
               </div>
             </div>

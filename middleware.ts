@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export default function middleware(request: NextRequest) {
   // Skip middleware for API routes, admin, provider, medical-centre routes, and static files
+  // Note: /user route is accessible (not skipped)
   const pathname = request.nextUrl.pathname;
   
   if (
