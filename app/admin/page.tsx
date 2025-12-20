@@ -52,56 +52,15 @@ export default function AdminPage() {
   };
 
   const handleAuthSuccess = async (token: string, userData: any) => {
-    // When logging in via /admin, the role should already be 'admin' from the auth flow
-    // But if for some reason it's not, try to update it
+    // SECURITY: Role can no longer be changed during authentication
+    // Users must have admin role assigned through database/admin operations
     if (userData.role !== 'admin') {
-      try {
-        // Try to update role to admin
-        const response = await fetch('/api/auth/update-role', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ role: 'admin' }),
-        });
-        
-        const data = await response.json();
-        
-        if (response.ok) {
-          // Update token with new role
-          localStorage.setItem('token', data.token);
-          setUser(data.user);
-          setIsAuthenticated(true);
-        } else {
-          // If update fails, still try to proceed - the role might have been set during auth
-          console.warn('Role update failed, but proceeding:', data.error);
-          // Check if role was actually set during authentication
-          if (userData.role === 'admin') {
-            localStorage.setItem('token', token);
-            setUser(userData);
-            setIsAuthenticated(true);
-          } else {
-            alert('Failed to grant admin access. Please try logging in again.');
-            localStorage.removeItem('token');
-          }
-        }
-      } catch (error) {
-        console.error('Error updating role:', error);
-        // If there's an error, still try to proceed if role is already admin
-        if (userData.role === 'admin') {
-          localStorage.setItem('token', token);
-          setUser(userData);
-          setIsAuthenticated(true);
-        } else {
-          alert('Failed to grant admin access. Please try again.');
-          localStorage.removeItem('token');
-        }
-      }
+      alert('Access denied. Admin role required. Please contact an administrator to grant admin access.');
+      localStorage.removeItem('token');
       return;
     }
     
-    // Role is already admin, proceed normally
+    // User is already admin, proceed normally
     localStorage.setItem('token', token);
     setUser(userData);
     setIsAuthenticated(true);
@@ -126,9 +85,9 @@ export default function AdminPage() {
             </p>
             <PhoneAuth onSuccess={handleAuthSuccess} role="admin" />
           </div>
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800">
-            <p className="font-semibold mb-1">Development Note:</p>
-            <p>After login, your account will be automatically granted admin access for testing purposes.</p>
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-sm text-yellow-800">
+            <p className="font-semibold mb-1">Security Note:</p>
+            <p>Only users with admin role can access this page. Admin role must be assigned through database or admin operations.</p>
           </div>
         </div>
       </div>

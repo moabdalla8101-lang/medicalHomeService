@@ -5,15 +5,15 @@ import { z } from 'zod';
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
 
+// SECURITY: Role parameter removed - users cannot specify their own role
 const sendOTPSchema = z.object({
   phone: z.string().min(1, 'Phone number is required'),
-  role: z.enum(['user', 'provider', 'admin', 'medical_centre']).optional(),
 });
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { phone, role } = sendOTPSchema.parse(body);
+    const { phone } = sendOTPSchema.parse(body);
     
     const normalizedPhone = normalizePhone(phone);
     

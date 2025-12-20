@@ -120,12 +120,12 @@ export default function PhoneAuth({ onSuccess, onAuthSuccess, role = 'user' }: P
         return;
       }
       
-      console.log('Verifying with:', { phoneToVerify, otp: cleanOtp, originalPhone: phone, normalizedPhone, role });
+      console.log('Verifying with:', { phoneToVerify, otp: cleanOtp, originalPhone: phone, normalizedPhone });
       
+      // SECURITY: Role parameter removed - users cannot specify their own role
       const requestBody = { 
         phone: phoneToVerify, 
-        otp: cleanOtp, // Use cleaned OTP
-        ...(role && { role }) // Only include role if it exists
+        otp: cleanOtp // Use cleaned OTP
       };
       console.log('Request body:', requestBody);
       

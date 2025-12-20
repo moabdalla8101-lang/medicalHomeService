@@ -105,10 +105,11 @@ export function normalizePhone(phone: string): string {
 }
 
 // Verify OTP and create/login user
+// SECURITY: Role is never accepted from client - users are created with 'user' role by default
+// Role changes must be done through admin-only endpoints
 export async function verifyOTPAndAuthenticate(
   phone: string,
-  otp: string,
-  role?: UserRole
+  otp: string
 ): Promise<{ user: User; token: string } | null> {
   const normalizedPhone = normalizePhone(phone);
   
@@ -150,36 +151,21 @@ export async function verifyOTPAndAuthenticate(
   if (process.env.NODE_ENV === 'development') {
     console.log('[AUTH] User lookup:', { 
       found: !!user, 
-      currentRole: user?.role, 
-      requestedRole: role 
+      currentRole: user?.role
     });
   }
   
   if (!user) {
-    // Create new user with the specified role (or default to 'user')
-    const newRole = role || 'user';
+    // SECURITY: Always create new users with 'user' role - never allow client to specify role
     user = await db.createUser({
       phone: normalizedPhone,
-      role: newRole,
+      role: 'user',
     });
     if (process.env.NODE_ENV === 'development') {
-      console.log('[AUTH] Created new user with role:', newRole);
-    }
-  } else if (role) {
-    // If role is provided (e.g., 'admin' when logging in via /admin), always update it
-    // This ensures users logging in via /admin get admin role regardless of previous role
-    if (user.role !== role) {
-      if (process.env.NODE_ENV === 'development') {
-        console.log('[AUTH] Updating user role from', user.role, 'to', role);
-      }
-      const updated = await db.updateUser(user.id, { role });
-      if (updated) user = updated;
-    } else {
-      if (process.env.NODE_ENV === 'development') {
-        console.log('[AUTH] User already has role:', role);
-      }
+      console.log('[AUTH] Created new user with role: user');
     }
   }
+  // SECURITY: Removed role update logic - roles can only be changed through admin endpoints
   
   // Generate JWT token
   const token = jwt.sign(

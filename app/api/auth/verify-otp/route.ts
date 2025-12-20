@@ -2,10 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifyOTPAndAuthenticate, normalizePhone } from '@/lib/auth';
 import { z } from 'zod';
 
+// SECURITY: Role parameter removed - users cannot specify their own role
 const verifyOTPSchema = z.object({
   phone: z.string().min(1, 'Phone number is required'),
   otp: z.string().length(6, 'OTP must be 6 digits'),
-  role: z.enum(['user', 'provider', 'admin', 'medical_centre']).optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -31,15 +31,16 @@ export async function POST(request: NextRequest) {
       throw error;
     }
     
-    const { phone, otp, role } = validatedData;
+    const { phone, otp } = validatedData;
     
     const normalizedPhone = normalizePhone(phone);
     
     if (process.env.NODE_ENV === 'development') {
-      console.log('[VERIFY-OTP] After normalization:', { originalPhone: phone, normalizedPhone, otp, role });
+      console.log('[VERIFY-OTP] After normalization:', { originalPhone: phone, normalizedPhone, otp });
     }
     
-    const result = await verifyOTPAndAuthenticate(normalizedPhone, otp, role);
+    // SECURITY: Role parameter removed - users are authenticated with their existing role
+    const result = await verifyOTPAndAuthenticate(normalizedPhone, otp);
     
     if (!result) {
       return NextResponse.json(
