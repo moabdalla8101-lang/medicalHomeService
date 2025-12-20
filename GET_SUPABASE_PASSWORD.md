@@ -61,3 +61,4 @@ postgresql://postgres.izvmzpbtfmvnazyejatv:[PASSWORD]@aws-0-us-east-1.pooler.sup
 For now, use the direct connection for development.
 
 
+

@@ -121,3 +121,4 @@ echo "Your app is now connected to Supabase! 🚀"
 echo ""
 
 
+

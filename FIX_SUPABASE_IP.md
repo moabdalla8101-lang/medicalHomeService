@@ -66,3 +66,4 @@ Once you've enabled IP access in Supabase:
 **The connection string is ready, just need to allow IP access in Supabase!** 🚀
 
 
+

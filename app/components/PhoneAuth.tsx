@@ -186,7 +186,7 @@ export default function PhoneAuth({ onSuccess, onAuthSuccess, role = 'user' }: P
             <label className="block text-sm font-medium text-gray-700 mb-2 text-right">
               رقم الهاتف (الكويت)
             </label>
-            <div className="flex flex-row-reverse">
+            <div className="flex" dir="rtl">
               <span className="inline-flex items-center px-3 rounded-r-lg border-l-0 border-r border border-gray-300 bg-gray-50 text-gray-500 text-sm font-medium">
                 +965
               </span>

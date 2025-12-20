@@ -87,3 +87,4 @@ For 1000 contracts/month:
 - Tesseract.js: FREE
 
 
+

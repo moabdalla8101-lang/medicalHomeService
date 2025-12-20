@@ -60,3 +60,4 @@ DATABASE_URL="postgresql://postgres:%24%21%24JE%3Fv%2FH2hCT%242@db.izvmzpbtfmvna
 4. Test with `psql` if possible
 
 
+
