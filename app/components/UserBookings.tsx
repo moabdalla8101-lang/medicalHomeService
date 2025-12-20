@@ -65,7 +65,7 @@ export default function UserBookings({ showHistory = false }: { showHistory?: bo
         setBookings(filteredBookings);
         
         // Fetch provider names for completed bookings
-        const providerIds = [...new Set(filteredBookings.map((b: Booking) => b.providerId))];
+        const providerIds = Array.from(new Set(filteredBookings.map((b: Booking) => b.providerId)));
         await fetchProviderNames(providerIds);
       } else {
         const errorData = await response.json();
