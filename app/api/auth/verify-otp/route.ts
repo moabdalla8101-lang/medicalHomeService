@@ -5,7 +5,7 @@ import { z } from 'zod';
 const verifyOTPSchema = z.object({
   phone: z.string().min(1, 'Phone number is required'),
   otp: z.string().length(6, 'OTP must be 6 digits'),
-  role: z.enum(['user', 'provider']).optional(),
+  role: z.enum(['user', 'provider', 'admin', 'medical_centre']).optional(),
 });
 
 export async function POST(request: NextRequest) {
