@@ -1,12 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Users, DollarSign, Calendar, Settings, LogOut, CheckCircle, XCircle } from 'lucide-react';
+import { Users, DollarSign, Calendar, Settings, LogOut, CheckCircle, XCircle, MessageSquare } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import AdminProviderApproval from './AdminProviderApproval';
 import AdminBookings from './AdminBookings';
 import AdminFinancials from './AdminFinancials';
 import AdminSettings from './AdminSettings';
+import AdminReviews from './AdminReviews';
 
 interface AdminDashboardProps {
   user: any;
@@ -14,7 +15,7 @@ interface AdminDashboardProps {
 
 export default function AdminDashboard({ user }: AdminDashboardProps) {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'providers' | 'bookings' | 'financials' | 'settings'>('providers');
+  const [activeTab, setActiveTab] = useState<'providers' | 'bookings' | 'reviews' | 'financials' | 'settings'>('providers');
   const [stats, setStats] = useState({
     totalProviders: 0,
     pendingProviders: 0,
@@ -187,6 +188,17 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
                 Bookings
               </button>
               <button
+                onClick={() => setActiveTab('reviews')}
+                className={`px-6 py-4 font-semibold border-b-2 transition-colors flex items-center gap-2 ${
+                  activeTab === 'reviews'
+                    ? 'border-blue-600 text-blue-600'
+                    : 'border-transparent text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                <MessageSquare className="w-4 h-4" />
+                Reviews
+              </button>
+              <button
                 onClick={() => setActiveTab('financials')}
                 className={`px-6 py-4 font-semibold border-b-2 transition-colors ${
                   activeTab === 'financials'
@@ -212,6 +224,7 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
           <div className="p-6">
             {activeTab === 'providers' && <AdminProviderApproval onUpdate={fetchStats} />}
             {activeTab === 'bookings' && <AdminBookings />}
+            {activeTab === 'reviews' && <AdminReviews />}
             {activeTab === 'financials' && <AdminFinancials />}
             {activeTab === 'settings' && <AdminSettings />}
           </div>
