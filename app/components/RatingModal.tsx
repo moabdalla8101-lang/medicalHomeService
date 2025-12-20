@@ -61,7 +61,7 @@ export default function RatingModal({
         throw new Error(data.error || 'فشل إرسال التقييم');
       }
 
-      toast.success('تم إرسال التقييم بنجاح. سيتم مراجعته من قبل الإدارة', {
+      toast.success('تم إرسال التقييم بنجاح', {
         style: {
           direction: 'rtl',
           textAlign: 'right',

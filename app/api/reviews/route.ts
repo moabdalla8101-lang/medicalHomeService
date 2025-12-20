@@ -59,14 +59,14 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // Create review (pending moderation)
+    // Create review (auto-approved for immediate display)
     const review = await db.createReview({
       bookingId,
       userId: user.id,
       providerId: booking.providerId,
       rating,
       comment: comment || undefined,
-      status: 'pending', // Requires admin approval
+      status: 'approved', // Auto-approved to show immediately
     });
     
     return NextResponse.json({
